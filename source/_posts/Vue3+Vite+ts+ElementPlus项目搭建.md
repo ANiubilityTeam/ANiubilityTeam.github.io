@@ -1,5 +1,5 @@
 ---
-title: 2021-06-19 Vue3.0 + Vite + TS + ElementPlus项目搭建
+title: Vue3.0 + Vite + TS + ElementPlus项目搭建
 author: RemindAutumn
 tags: 
   - Vue
