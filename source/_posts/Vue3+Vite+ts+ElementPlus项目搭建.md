@@ -1,5 +1,5 @@
 ---
-title: 2021-06-19 create project with vite
+title: 2021-06-19 Vue3.0 + Vite + TS + ElementPlus项目搭建
 author: RemindAutumn
 tags: 
   - Vue
@@ -8,7 +8,7 @@ tags:
   - ElementPlus
 categories: 
   - 前端工程化
-description: Vue3.0 + Vite + TS + ElementPlus
+description: Vue3.0 + Vite + TS + ElementPlus项目搭建
 date: 2021-06-19
 ---
 # Season One （Vue3.0 + Vite + TS + ElementPlus）

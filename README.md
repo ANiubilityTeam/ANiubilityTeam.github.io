@@ -4,11 +4,11 @@
  * @Author: Piers
  * @Date: 2021-06-23 14:17:57
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-06-25 13:57:37
+ * @LastEditTime: 2021-06-25 13:58:37
 -->
 ## master分支
 
-[https://aniubilityteam.github.io](https://aniubilityteam.github.io) 站点的静态资源分支，由每次`hexo s`自动生成部署
+[https://aniubilityteam.github.io](https://aniubilityteam.github.io) 站点的静态资源分支，不需要在此分支做任何修改
 
 ## source分支
 
