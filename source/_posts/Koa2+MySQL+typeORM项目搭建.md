@@ -11,25 +11,23 @@ description: Koa作为Express原班人马打造的新生代 Node.js Web 框架�
 date: 2021-06-24
 ---
 
-# Koa+MySQL+TypeORM项目搭建
-
-## 1. 简介
+## 简介
 `Koa` 作为 `Express` 原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对 `Promise` 以及 `async/await` 异步编程的完全支持，`Koa` 框架自从诞生以来就吸引了无数 Node 爱好者。然而 `Koa` 本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持。
 
-## 2. 准备
-### 2.1 环境准备
+## 准备
+### 环境准备
 - Node.js：10.x 及以上
 - npm：6.x 及以上
 - Koa：2.x
 - MySQL：推荐稳定的 5.7 版本及以上
 - TypeORM：0.2.x
-### 2.2 学习目标
+### 学习目标
 - 如何编写 `Koa` 中间件
 - 通过 `@koa/router` 实现路由配置
 - 通过 `TypeORM` 连接和读写 `MySQL` 数据库（其他数据库都类似）
 - 了解 `JWT` 鉴权的原理，并动手实现
 - 掌握 `Koa` 的错误处理机制
-### 2.3 初始代码
+### 初始代码
 初始化代码的仓库和分支
 
 `git clone -b init-porject https://github.com/ANiubilityTeam/koa.git`
@@ -66,7 +64,7 @@ app.listen(3000);
 
 得到 `Hello Koat`
 
-## 3. Koa中间件
+## Koa中间件
 严格意义上来说，Koa 只是一个中间件框架，正如它的介绍所说：
 > Expressive middleware for node.js using ES2017 async functions.（通过 ES2017 async 函数编写富有表达力的 Node.js 中间件）
 
@@ -80,7 +78,7 @@ app.listen(3000);
 
 可以看出来Koa对标的是[connect](https://github.com/senchalabs/connect)（Express 底层的中间件层），而不包含 Express 所拥有的其他功能，例如路由、模板引擎、发送文件等。
 
-### 3.1 Express使用的中间件模型
+### Express使用的中间件模型
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18d5ac5f44484859abf3a4c51a7d2721~tplv-k3u1fbpfcp-watermark.image)
 在Express中，请求（Request）直接依次贯穿各个中间件，最后通过请求处理函数返回响应（Response），非常简单。
 
@@ -91,7 +89,7 @@ function handler(req, res) {
 }
 ```
 
-### 3.2 Koa使用的中间件模型 - 洋葱模型
+### Koa使用的中间件模型 - 洋葱模型
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/892c05eecb054fdcb47d8f771619ff3c~tplv-k3u1fbpfcp-watermark.image)
 在Koa中，中间件不像 Express 中间件那样在请求通过了之后就完成了自己的使命；相反，中间件的执行清晰地分为两个阶段。
 
@@ -106,7 +104,7 @@ function handler(ctx) {
 }
 ```
 
-### 3.3 Koa中间件的定义
+### Koa中间件的定义
 中间件其实也是一个函数
 ```js
 async function middleware(ctx, next) {
@@ -125,7 +123,7 @@ ctx.status // 相当于 ctx.response.status
 
 中间件的第二个参数便是 next 函数，用来把控制权转交给下一个中间件。但是它跟 Express 的 next 函数本质的区别在于，Koa 的`next`函数返回的是一个 Promise，在这个 Promise 进入完成状态（Fulfilled）后，就会去执行中间件中第二阶段的代码。
 
-### 3.4 实现一个日志中间件
+### 实现一个日志中间件
 ```js
 // src/logger.ts
 
@@ -166,7 +164,7 @@ app.use(bodyParser());
 
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fbdba0dff89445f2a45ac1c44c217de9~tplv-k3u1fbpfcp-watermark.image)
 
-## 4. Koa路由配置
+## Koa路由配置
 由于 Koa 只是一个中间件框架，所以路由的实现需要独立的 npm 包。首先安装 @koa/router 及其 TypeScript 类型定义
 
 `$ npm install @koa/router`
@@ -175,7 +173,7 @@ app.use(bodyParser());
 
 > 有些教程使用 koa-router ，但由于 koa-router 目前处于几乎无人维护的状态，所以我们这里使用维护更积极的 Fork 版本 @koa/router。
 
-### 4.1 路由规划
+### 路由规划
 - GET /users ：查询所有的用户
 - GET /users/:id ：查询单个用户
 - PUT /users/:id ：更新单个用户
@@ -183,7 +181,7 @@ app.use(bodyParser());
 - POST /users/login ：登录（获取 JWT Token）
 - POST /users/register ：注册用户
 
-### 4.2 创建控制器
+### 创建控制器
 在 src 中创建 controllers 目录，用于存放控制器有关的代码。首先是 AuthController 
 
 创建 src/controllers/auth.ts ，代码如下：
@@ -225,7 +223,7 @@ export default class UserController {
 }
 ```
 
-### 4.3 创建路由
+### 创建路由
 然后我们创建 src/routes.ts，用于把控制器挂载到对应的路由上面
 ```js
 import Router from '@koa/router';
@@ -247,7 +245,7 @@ router.delete('/users/:id', UserController.deleteUser);
 
 export default router;
 ```
-### 4.4 注册路由
+### 注册路由
 将 router 注册为中间件。打开 src/server.ts，修改代码如下
 ```js
 // ...
@@ -291,10 +289,10 @@ $ curl -X DELETE localhost:3000/users/123
 DeleteUser controller with ID = 123
 ```
 
-## 5. 接入MySQL
+## 接入MySQL
 Koa 本身是一个中间件框架，理论上可以接入任何类型的数据库，这里我们选择流行的关系型数据库 MySQL。并且，由于我们使用了 TypeScript 开发，因此这里使用为 TS 量身打造的 [ORM](http://www.ruanyifeng.com/blog/2019/02/orm-tutorial.html) 库 TypeORM。
 
-### 5.1 准备数据库
+### 准备数据库
 - 官网下载安装包，这里是[下载地址](https://dev.mysql.com/downloads/mysql/)
 - 安装好后，启动数据库，macOS是在 系统偏好设置 - MySQL - Start MySQL Server
 - 连接数据库`mysql -u root -p`
@@ -303,7 +301,7 @@ Koa 本身是一个中间件框架，理论上可以接入任何类型的数据�
 - 创建用户并授予权限`CREATE USER 'user'@'localhost' IDENTIFIED BY 'pass';` `GRANT ALL PRIVILEGES ON koa.* TO 'user'@'localhost';`
 - 处理 MySQL 8.0 版本的认证协议问题`ALTER USER 'user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pass';` `flush privileges;`
 
-### 5.2 配置和连接TypeORM
+### 配置和连接TypeORM
 安装相关的 npm 包，分别是 MySQL 驱动、TypeORM 及 reflect-metadata（反射 API 库，用于 TypeORM 推断模型的元数据）
 
 `$ npm install mysql typeorm reflect-metadata`
@@ -358,7 +356,7 @@ createConnection()
 
 ```
 
-### 5.3 创建数据模型定义
+### 创建数据模型定义
 创建src/entity/user.ts , 用于存放数据模型定义文件,代表用户模型
 ```js
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
@@ -385,7 +383,7 @@ TypeORM通过[装饰器](https://www.tslang.cn/docs/handbook/decorators.html)这
 - PrimaryGeneratedColumn 则是装饰主列，它的值将自动生成
 > 关于 TypeORM 所有的装饰器定义及其详细使用，请参考其[装饰器文档](https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/decorator-reference.md)。
 
-### 5.4 控制器中操作数据库
+### 控制器中操作数据库
 然后就可以在 Controller 中进行数据的增删改查操作了。首先我们打开 src/controllers/user.ts ，实现所有 Controller 的逻辑
 ```js
 import { Context } from 'koa';
@@ -483,7 +481,7 @@ export default class AuthController {
 
 在数据库中会看到记录了对应的数据
 
-## 6. JWT 鉴权
+## JWT 鉴权
 `JSON Web Token（JWT）`是一种流行的 `RESTful API` 鉴权方案。这里我们将手把手带你学会如何在 `Koa` 框架中使用 `JWT` 鉴权，可参考[这篇文章](http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html)进行学习。
 
 首先安装相关的 npm 包
@@ -498,7 +496,7 @@ npm install @types/jsonwebtoken -D
 export const JWT_SECRET = 'secret';
 ```
 
-### 6.1 重新规划路由
+### 重新规划路由
 
 有些路由我们希望只有已登录的用户才有权查看（受保护的路由），而另一些路由则是所有请求都可以访问（不受保护的路由）。在 `Koa` 的洋葱模型中，我们可以这样实现
 
@@ -532,7 +530,7 @@ protectedRouter.delete('/users/:id', UserController.deleteUser);
 export { protectedRouter, unprotectedRouter };
 ```
 
-### 6.2 注册JWT中间件
+### 注册JWT中间件
 
 修改`src/server.ts`
 
@@ -567,7 +565,7 @@ createConnection()
 
 > 在 JWT 中间件注册完毕后，如果用户请求携带了有效的 `Token`，后面的 `protectedRouter` 就可以通过 `ctx.state.user` 获取到 `Token` 的内容（更精确的说法是 `Payload`，负载，一般是用户的关键信息，例如 ID）了；反之，如果 `Token` 缺失或无效，那么 `JWT` 中间件会直接自动返回 `401` 错误。关于 `koa-jwt` 的更多使用细节，请参考其[文档](https://github.com/koajs/jwt)。
 
-### 6.3 在 Login 中签发 JWT Token
+### 在 Login 中签发 JWT Token
 
 我们需要提供一个 API 端口让用户可以获取到 `JWT Token`，最合适的当然是登录接口 `/auth/login`。打开 `src/controllers/auth.ts` ，在 `login` 控制器中实现签发 `JWT Token` 的逻辑，代码如下
 
@@ -609,7 +607,7 @@ export default class AuthController {
 
 这里的 `Token` 负载就是标识用户 `ID` 的对象 `{ id: user.id }` ，这样后面鉴权成功后就可以通过 `ctx.user.id` 来获取用户 `ID`。
 
-### 6.4 在 User 控制器中添加访问控制
+### 在 User 控制器中添加访问控制
 
 `Token` 的中间件和签发都搞定之后，最后一步就是在合适的地方校验用户的 `Token`，确认其是否有足够的权限。最典型的场景便是，在更新或删除用户时，我们要确保是用户本人在操作。打开 `src/controllers/user.ts` ，代码如下：
 
@@ -657,7 +655,7 @@ export default class UserController {
 
 两个 `Controller` 的鉴权逻辑基本相同，我们通过比较 `ctx.params.id` 和 `ctx.state.user.id` 是否相同，如果不相同则返回 `403 Forbidden` 错误，相同则继续执行相应的数据库操作。
 
-## 7. 实现自定义错误（异常）
+## 实现自定义错误（异常）
 
 首先，让我们来实现一些自定义的错误（或者异常，本文不作区分）类。创建 `src/exceptions.ts` ，代码如下：
 
@@ -699,7 +697,7 @@ export class ForbiddenException extends BaseException {
 
 这里的错误类型参考了 [Nest.js](https://docs.nestjs.cn/7/exceptionfilters) 的设计。出于学习目的，这里作了简化，并且只实现了我们需要用到的错误
 
-### 7.1 在 Controller 中使用自定义错误
+### 在 Controller 中使用自定义错误
 
 接着我们便可以在 `Controller` 中使用刚才的自定义错误了。打开 `src/controllers/auth.ts`
 
@@ -783,7 +781,7 @@ export default class UserController {
 }
 ```
 
-### 7.2 添加错误处理中间件
+### 添加错误处理中间件
 
 最后，我们需要添加错误处理中间件来捕获在 `Controller` 中抛出的错误。打开 `src/server.ts` ，实现错误处理中间件
 
