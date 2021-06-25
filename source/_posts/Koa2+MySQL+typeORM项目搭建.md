@@ -444,7 +444,7 @@ export default class UserController {
 
 还可以通过 `ctx.request.body` 获取到了请求体的数据，这是我们在第一步就配置好的 `bodyParser` 中间件在 `Context` 对象中添加的。
 
-然后修改 AuthController ，实现具体的注册逻辑。由于密码不能明文保存在数据库中，需要使用hash算法进行加密，这里我们使用曾经获得过密码加密大赛冠军的 [Argon2](https://www.argon2.com/) 算法。安装对应的 npm 包
+然后修改 AuthController ，实现具体的注册逻辑。由于密码不能明文保存在数据库中，需要使用`hash`算法进行加密，这里我们使用曾经获得过密码加密大赛冠军的 [Argon2](https://www.argon2.com/) 算法。安装对应的 npm 包
 
 `npm install argon2`
 
