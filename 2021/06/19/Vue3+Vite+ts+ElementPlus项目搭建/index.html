@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Vue3.0 + Vite + TS + ElementPlus项目搭建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue3.0 + Vite + TS + ElementPlus项目搭建">
+<meta property="og:url" content="http://example.com/2021/06/19/Vue3+Vite+ts+ElementPlus%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Niubility Team">
+<meta property="og:description" content="Vue3.0 + Vite + TS + ElementPlus项目搭建">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-18T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-26T07:24:26.057Z">
+<meta property="article:author" content="Niubility Team">
+<meta property="article:tag" content="Vue">
+<meta property="article:tag" content="Vite">
+<meta property="article:tag" content="TS">
+<meta property="article:tag" content="ElementPlus">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2021/06/19/Vue3+Vite+ts+ElementPlus%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/06/19/Vue3+Vite+ts+ElementPlus%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/","path":"2021/06/19/Vue3+Vite+ts+ElementPlus项目搭建/","title":"Vue3.0 + Vite + TS + ElementPlus项目搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Vue3.0 + Vite + TS + ElementPlus项目搭建 | Niubility Team</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Niubility Team</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Season-One-%EF%BC%88Vue3-0-Vite-TS-ElementPlus%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">Season One （Vue3.0 + Vite + TS + ElementPlus）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%8E%AF%E5%A2%83"><span class="nav-number">1.1.</span> <span class="nav-text">前置环境</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%88%9B%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.2.</span> <span class="nav-text">一、创建项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E5%91%BD%E4%BB%A4"><span class="nav-number">1.2.1.</span> <span class="nav-text">相关命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%B9%B6%E9%80%89%E6%8B%A9%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">创建并选择配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0-package-json-%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.3.</span> <span class="nav-text">添加 package.json 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%89%E8%A3%85-node-modules-%E5%B9%B6%E8%BF%90%E8%A1%8C%E9%A1%B9%E7%9B%AE"><span class="nav-number">1.2.4.</span> <span class="nav-text">安装 node_modules 并运行项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BD%BF%E7%94%A8vue-router"><span class="nav-number">1.3.</span> <span class="nav-text">二、使用vue-router</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#vue-router%E7%9A%84%E5%AE%89%E8%A3%85%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.1.</span> <span class="nav-text">vue-router的安装命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#type-node%E5%AE%89%E8%A3%85%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.2.</span> <span class="nav-text">type&#x2F;node安装命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%AB%E5%90%8D%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.3.</span> <span class="nav-text">别名配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E5%BE%84%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.4.</span> <span class="nav-text">路径配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%BB%BArouter%E6%96%87%E4%BB%B6"><span class="nav-number">1.3.5.</span> <span class="nav-text">新建router文件</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Niubility Team</p>
+  <div class="site-description" itemprop="description">分享促进学习</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ANiubilityTeam" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ANiubilityTeam" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/ANiubilityTeam" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/19/Vue3+Vite+ts+ElementPlus%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Niubility Team">
+      <meta itemprop="description" content="分享促进学习">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Niubility Team">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue3.0 + Vite + TS + ElementPlus项目搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-19 00:00:00" itemprop="dateCreated datePublished" datetime="2021-06-19T00:00:00+08:00">2021-06-19</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-26 15:24:26" itemprop="dateModified" datetime="2021-06-26T15:24:26+08:00">2021-06-26</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">前端工程化</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">Vue3.0 + Vite + TS + ElementPlus项目搭建</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Season-One-（Vue3-0-Vite-TS-ElementPlus）"><a href="#Season-One-（Vue3-0-Vite-TS-ElementPlus）" class="headerlink" title="Season One （Vue3.0 + Vite + TS + ElementPlus）"></a>Season One （Vue3.0 + Vite + TS + ElementPlus）</h1><h2 id="前置环境"><a href="#前置环境" class="headerlink" title="前置环境"></a>前置环境</h2><ul>
+<li><p><strong>系统</strong><br>windows</p>
+</li>
+<li><p><strong>node</strong><br>版本 14.17.0</p>
+</li>
+<li><p><strong>yarn</strong><br>版本 1.22.10</p>
+</li>
+</ul>
+<blockquote>
+<p>Vite 需要 Node.js 版本 &gt;= 12.0.0。</p>
+</blockquote>
+<hr>
+<h2 id="一、创建项目"><a href="#一、创建项目" class="headerlink" title="一、创建项目"></a>一、创建项目</h2><h3 id="相关命令"><a href="#相关命令" class="headerlink" title="相关命令"></a>相关命令</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yarn create @vitejs/app demo</span><br><span class="line"><span class="built_in">cd</span> demo</span><br><span class="line">yarn</span><br><span class="line">yarn dev</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建并选择配置"><a href="#创建并选择配置" class="headerlink" title="创建并选择配置"></a>创建并选择配置</h3><p>使用 <code>yarn create @vitejs/app demo</code> 命令，会出现两次选择提示, 我们依次选择vue，vue-ts即可。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">» - Use arrow-keys. Return to submit.</span><br><span class="line">    vanilla</span><br><span class="line">&gt;   vue</span><br><span class="line">    react</span><br><span class="line">    preact</span><br><span class="line">    lit-element</span><br><span class="line">    svelte</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">» - Use arrow-keys. Return to submit.</span><br><span class="line">    vue</span><br><span class="line">&gt;   vue-ts</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加-package-json-配置"><a href="#添加-package-json-配置" class="headerlink" title="添加 package.json 配置"></a>添加 <code>package.json</code> 配置</h3><p>在项目创建成功，目录生成后，找到 <code>package.json</code> 文件。添加 <code>&quot;license&quot;: &quot;ISC&quot;</code> ，和 <code>--host</code> 。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;license&quot;</span>: <span class="string">&quot;ISC&quot;</span>, <span class="comment">//添加此行。开源许可证</span></span><br><span class="line">  <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;bone&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;version&quot;</span>: <span class="string">&quot;0.0.0&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;scripts&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;dev&quot;</span>: <span class="string">&quot;vite --host&quot;</span>, <span class="comment">//添加 --host 开启公开访问.</span></span><br><span class="line">    <span class="attr">&quot;build&quot;</span>: <span class="string">&quot;vue-tsc --noEmit &amp;&amp; vite build&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;serve&quot;</span>: <span class="string">&quot;vite preview&quot;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;dependencies&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;vue&quot;</span>: <span class="string">&quot;^3.0.5&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;vue-router&quot;</span>: <span class="string">&quot;4&quot;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;devDependencies&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;@types/node&quot;</span>: <span class="string">&quot;^15.6.1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;@vitejs/plugin-vue&quot;</span>: <span class="string">&quot;^1.2.2&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;@vue/compiler-sfc&quot;</span>: <span class="string">&quot;^3.0.5&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;element-plus&quot;</span>: <span class="string">&quot;^1.0.2-beta.45&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;sass&quot;</span>: <span class="string">&quot;^1.34.0&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;typescript&quot;</span>: <span class="string">&quot;^4.1.3&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;vite&quot;</span>: <span class="string">&quot;^2.3.4&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;vue-tsc&quot;</span>: <span class="string">&quot;^0.0.24&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="安装-node-modules-并运行项目"><a href="#安装-node-modules-并运行项目" class="headerlink" title="安装 node_modules 并运行项目"></a>安装 <code>node_modules</code> 并运行项目</h3><p>在 <code>yarn dev</code> 成功后，在终端应该可以看到如下内容</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vite v2.3.7 dev server running at:</span><br><span class="line"></span><br><span class="line">&gt; Network:  http://192.168.1.44:3000/</span><br><span class="line">&gt; Local:    http://localhost:3001/</span><br><span class="line"></span><br><span class="line">ready <span class="keyword">in</span> 351ms.</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、使用vue-router"><a href="#二、使用vue-router" class="headerlink" title="二、使用vue-router"></a>二、使用vue-router</h2><p>因为使用的vite默认时没有vue-router的, 使用 yarn add vue-router@4 安装即可</p>
+<h3 id="vue-router的安装命令"><a href="#vue-router的安装命令" class="headerlink" title="vue-router的安装命令"></a>vue-router的安装命令</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add vue-router@4</span><br></pre></td></tr></table></figure>
+
+<h3 id="type-node安装命令"><a href="#type-node安装命令" class="headerlink" title="type/node安装命令"></a>type/node安装命令</h3><p>因为使用别名的时候需用用到 node ， 而这是ts 项目，如果没有安装 <code>type/node</code> 的话， 此时也需要安装一下。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @types/node -D</span><br></pre></td></tr></table></figure>
+
+<h3 id="别名配置"><a href="#别名配置" class="headerlink" title="别名配置"></a>别名配置</h3><p>安装完成后， 先不急着去新建<em>路由</em>文件 。先修改一下 <code>vite.config.ts</code> 文件 , 配置<strong>别名</strong> ，和<strong>webpack</strong>类似，<strong>vite</strong>也有个 <code>alias</code> 属性。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* vite.config.ts */</span></span><br><span class="line"><span class="keyword">import</span> &#123; defineConfig &#125; <span class="keyword">from</span> <span class="string">&#x27;vite&#x27;</span></span><br><span class="line"><span class="keyword">import</span> vue <span class="keyword">from</span> <span class="string">&#x27;@vitejs/plugin-vue&#x27;</span></span><br><span class="line"><span class="keyword">const</span> &#123; resolve &#125; = <span class="built_in">require</span>(<span class="string">&quot;path&quot;</span>);<span class="comment">//引入resolve</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> defineConfig(&#123;</span><br><span class="line">    <span class="attr">plugins</span>: [vue()],</span><br><span class="line"></span><br><span class="line">    <span class="attr">resolve</span>: &#123; <span class="comment">// resolve相关配置</span></span><br><span class="line">        <span class="attr">alias</span>: &#123; <span class="comment">//别名配置</span></span><br><span class="line">            <span class="string">&quot;@&quot;</span>: resolve(__dirname, <span class="string">&quot;/src&quot;</span>), <span class="comment">//配置别名 </span></span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果没有安装 <code>type/node</code> ，那么 <code>const &#123; resolve &#125; = require(&quot;path&quot;)</code> 会报错嗷， 安装一下即可。</p>
+</blockquote>
+<h3 id="路径配置"><a href="#路径配置" class="headerlink" title="路径配置"></a>路径配置</h3><p>在我们配置完别名属性之后，因为我们使用ts，为了避免一会开发, 编写路由文件时劈里啪啦的错误提示和警告，我们也需要去配置一下 <code>tsconfig.json</code> .</p>
+<p>先看一下此时默认的 <code>tsconfig.json</code> 文件的配置. 让我们打上简单的注释</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 详细配置请参考官网 ✈✈ https://www.tslang.cn/docs/handbook/compiler-options.html */</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;compilerOptions&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;target&quot;</span>: <span class="string">&quot;esnext&quot;</span>, <span class="comment">//指定ECMAScript目标版本 es5 这些, 此处的esnext 是最新版本的意思下同</span></span><br><span class="line">    <span class="attr">&quot;module&quot;</span>: <span class="string">&quot;esnext&quot;</span>, <span class="comment">// 指定生成哪个模块系统代码</span></span><br><span class="line">    <span class="attr">&quot;moduleResolution&quot;</span>: <span class="string">&quot;node&quot;</span>,<span class="comment">// 决定如何处理模块。或者是&quot;Node&quot;对于Node.js/io.js，或者是&quot;Classic&quot;（默认）。 </span></span><br><span class="line">    <span class="attr">&quot;strict&quot;</span>: <span class="literal">true</span>,<span class="comment">// 启用所有严格类型检查选项。</span></span><br><span class="line">    <span class="attr">&quot;jsx&quot;</span>: <span class="string">&quot;preserve&quot;</span>, <span class="comment">// 支持JSX</span></span><br><span class="line">    <span class="attr">&quot;sourceMap&quot;</span>: <span class="literal">true</span>, <span class="comment">// 是否生成相应的 .map文件</span></span><br><span class="line">    <span class="attr">&quot;resolveJsonModule&quot;</span>: <span class="literal">true</span>, <span class="comment">// 这个我居然没在配置里查到 ,离谱 💢 根据字面意思 可能是是否导出json 模块?</span></span><br><span class="line">    <span class="attr">&quot;esModuleInterop&quot;</span>: <span class="literal">true</span>, <span class="comment">// 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。</span></span><br><span class="line">    <span class="attr">&quot;lib&quot;</span>: [<span class="string">&quot;esnext&quot;</span>, <span class="string">&quot;dom&quot;</span>],  <span class="comment">//编译过程中需要引入的库文件的列表 这个自己取看文档,上面有小飞机.</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;include&quot;</span>: [<span class="string">&quot;src/**/*.ts&quot;</span>, <span class="string">&quot;src/**/*.d.ts&quot;</span>, <span class="string">&quot;src/**/*.tsx&quot;</span>, <span class="string">&quot;src/**/*.vue&quot;</span>]</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后我们需要加上关于 path 的配置. 告诉 ts , 对应的地址别名 指向的文件地址. 避免在ts中使用别名的时候, 报错”找不到文件”.</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;compilerOptions&quot;</span>: &#123;</span><br><span class="line">    <span class="comment">/* ... */</span></span><br><span class="line">    <span class="attr">&quot;baseUrl&quot;</span>: <span class="string">&quot;&quot;</span>, <span class="comment">// 🦴路径映射 , 注意 配置 paths 的时候如果不设置baseUrl 会报错嗷.</span></span><br><span class="line">    <span class="attr">&quot;paths&quot;</span>: &#123; <span class="comment">//这边就是路配置拉, 配置了这个就可以自动补全地址拉.</span></span><br><span class="line">      <span class="attr">&quot;@/*&quot;</span>: [<span class="string">&quot;src/*&quot;</span>],</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* ... */</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置完成后, 我们就可以开始配置我们第一个路由地址文件了。</p>
+<h3 id="新建router文件"><a href="#新建router文件" class="headerlink" title="新建router文件"></a>新建router文件</h3><p>此时我们就可以在 <code>src</code> 下新建一个 <code>router</code> 文件夹, 然后新建 <code>index.ts</code> 文件.(见目录)</p>
+<p>在v3.0 中  vue router 的使用方式和vue2.0 并没有巨大的用法区别.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* src/router/index.ts */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 首先我们需要先引入`vue-router`提供给我们的创建方法 */</span></span><br><span class="line"><span class="keyword">import</span> &#123; createRouter, createWebHistory, RouteRecordRaw &#125; <span class="keyword">from</span> <span class="string">&#x27;vue-router&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> Lay <span class="keyword">from</span> <span class="string">&#x27;@/views/Layout&#x27;</span></span><br><span class="line"><span class="keyword">const</span> routes: <span class="built_in">Array</span>&lt;RouteRecordRaw&gt; = [</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">path</span>: <span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        <span class="attr">component</span>: Lay,</span><br><span class="line">        <span class="attr">children</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">path</span>: <span class="string">&#x27;home&#x27;</span>,</span><br><span class="line">                <span class="attr">name</span>: <span class="string">&#x27;home&#x27;</span>,</span><br><span class="line">                <span class="attr">component</span>: <span class="function">() =&gt;</span> <span class="keyword">import</span>(<span class="string">&#x27;@/views/Home/index&#x27;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line"></span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="attr">path</span>: <span class="string">&#x27;/hellow&#x27;</span>,</span><br><span class="line">        <span class="attr">name</span>: <span class="string">&#x27;TodoList&#x27;</span>,</span><br><span class="line">        <span class="attr">component</span>: <span class="function">() =&gt;</span> <span class="keyword">import</span>(<span class="string">&#x27;@/components/HelloWorld.vue&#x27;</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> router = createRouter(&#123;</span><br><span class="line">    <span class="attr">history</span>: createWebHistory(), <span class="comment">// 路由模式 一样的 有hash 模式还有history模式,此处使用的时 history 模式</span></span><br><span class="line">    routes,            </span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> router</span><br></pre></td></tr></table></figure>
+
+<p>包括在main.ts 中引入 .  </p>
+<p>下一期介绍vue3种的一些基本写法.在v3中v2对应的一些写法.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+              <a href="/tags/Vite/" rel="tag"># Vite</a>
+              <a href="/tags/TS/" rel="tag"># TS</a>
+              <a href="/tags/ElementPlus/" rel="tag"># ElementPlus</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/24/Koa2+MySQL+typeORM%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/" rel="next" title="Koa+MySQL+TypeORM项目搭建">
+                  Koa+MySQL+TypeORM项目搭建 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Niubility Team</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>

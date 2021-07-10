@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css" integrity="sha256-2H3fkXt6FEmrReK448mDVGKb3WW2ZZw35gI7vqHOE4Y=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","version":"8.5.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<meta name="description" content="Koa作为Express原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对Promise以及async&#x2F;await异步编程的完全支持，Koa框架自从诞生以来就吸引了无数Node爱好者。然而Koa本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持...">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Koa+MySQL+TypeORM项目搭建">
+<meta property="og:url" content="http://example.com/2021/06/24/Koa2+MySQL+typeORM%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Niubility Team">
+<meta property="og:description" content="Koa作为Express原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对Promise以及async&#x2F;await异步编程的完全支持，Koa框架自从诞生以来就吸引了无数Node爱好者。然而Koa本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持...">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21f791a609664f79a7d8c8a250296aa4~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18d5ac5f44484859abf3a4c51a7d2721~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/892c05eecb054fdcb47d8f771619ff3c~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/84ffc59d814549b48fc8f717a2036d4a~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fbdba0dff89445f2a45ac1c44c217de9~tplv-k3u1fbpfcp-watermark.image">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1294b1ce42a24120ab463e2993cbbda9~tplv-k3u1fbpfcp-watermark.image">
+<meta property="article:published_time" content="2021-06-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-26T07:24:26.057Z">
+<meta property="article:author" content="Niubility Team">
+<meta property="article:tag" content="Koa">
+<meta property="article:tag" content="TypeORM">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21f791a609664f79a7d8c8a250296aa4~tplv-k3u1fbpfcp-watermark.image">
+
+
+<link rel="canonical" href="http://example.com/2021/06/24/Koa2+MySQL+typeORM%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"http://example.com/2021/06/24/Koa2+MySQL+typeORM%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/","path":"2021/06/24/Koa2+MySQL+typeORM项目搭建/","title":"Koa+MySQL+TypeORM项目搭建"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Koa+MySQL+TypeORM项目搭建 | Niubility Team</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Niubility Team</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">2.2.</span> <span class="nav-text">学习目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">初始代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Koa%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">Koa中间件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Express%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">Express使用的中间件模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Koa%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%AD%E9%97%B4%E4%BB%B6%E6%A8%A1%E5%9E%8B-%E6%B4%8B%E8%91%B1%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">Koa使用的中间件模型 - 洋葱模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Koa%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="nav-number">3.3.</span> <span class="nav-text">Koa中间件的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E6%97%A5%E5%BF%97%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">3.4.</span> <span class="nav-text">实现一个日志中间件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Koa%E8%B7%AF%E7%94%B1%E9%85%8D%E7%BD%AE"><span class="nav-number">4.</span> <span class="nav-text">Koa路由配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E8%A7%84%E5%88%92"><span class="nav-number">4.1.</span> <span class="nav-text">路由规划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text">创建控制器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%B7%AF%E7%94%B1"><span class="nav-number">4.3.</span> <span class="nav-text">创建路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E8%B7%AF%E7%94%B1"><span class="nav-number">4.4.</span> <span class="nav-text">注册路由</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%85%A5MySQL"><span class="nav-number">5.</span> <span class="nav-text">接入MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">5.1.</span> <span class="nav-text">准备数据库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%92%8C%E8%BF%9E%E6%8E%A5TypeORM"><span class="nav-number">5.2.</span> <span class="nav-text">配置和连接TypeORM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E6%A8%A1%E5%9E%8B%E5%AE%9A%E4%B9%89"><span class="nav-number">5.3.</span> <span class="nav-text">创建数据模型定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E5%99%A8%E4%B8%AD%E6%93%8D%E4%BD%9C%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">5.4.</span> <span class="nav-text">控制器中操作数据库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JWT-%E9%89%B4%E6%9D%83"><span class="nav-number">6.</span> <span class="nav-text">JWT 鉴权</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E6%96%B0%E8%A7%84%E5%88%92%E8%B7%AF%E7%94%B1"><span class="nav-number">6.1.</span> <span class="nav-text">重新规划路由</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8CJWT%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">6.2.</span> <span class="nav-text">注册JWT中间件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-Login-%E4%B8%AD%E7%AD%BE%E5%8F%91-JWT-Token"><span class="nav-number">6.3.</span> <span class="nav-text">在 Login 中签发 JWT Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-User-%E6%8E%A7%E5%88%B6%E5%99%A8%E4%B8%AD%E6%B7%BB%E5%8A%A0%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6"><span class="nav-number">6.4.</span> <span class="nav-text">在 User 控制器中添加访问控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%99%E8%AF%AF%EF%BC%88%E5%BC%82%E5%B8%B8%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">实现自定义错误（异常）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-Controller-%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E9%94%99%E8%AF%AF"><span class="nav-number">7.1.</span> <span class="nav-text">在 Controller 中使用自定义错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86%E4%B8%AD%E9%97%B4%E4%BB%B6"><span class="nav-number">7.2.</span> <span class="nav-text">添加错误处理中间件</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-overview">
+            <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Niubility Team</p>
+  <div class="site-description" itemprop="description">分享促进学习</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ANiubilityTeam" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ANiubilityTeam" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+          </div>
+        </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/ANiubilityTeam" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/06/24/Koa2+MySQL+typeORM%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Niubility Team">
+      <meta itemprop="description" content="分享促进学习">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Niubility Team">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Koa+MySQL+TypeORM项目搭建
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-24 00:00:00" itemprop="dateCreated datePublished" datetime="2021-06-24T00:00:00+08:00">2021-06-24</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-06-26 15:24:26" itemprop="dateModified" datetime="2021-06-26T15:24:26+08:00">2021-06-26</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%89%8D%E7%AB%AF%E5%B7%A5%E7%A8%8B%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">前端工程化</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+            <div class="post-description">Koa作为Express原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对Promise以及async/await异步编程的完全支持，Koa框架自从诞生以来就吸引了无数Node爱好者。然而Koa本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持...</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>Koa</code> 作为 <code>Express</code> 原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对 <code>Promise</code> 以及 <code>async/await</code> 异步编程的完全支持，<code>Koa</code> 框架自从诞生以来就吸引了无数 Node 爱好者。然而 <code>Koa</code> 本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持。</p>
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><h3 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h3><ul>
+<li>Node.js：10.x 及以上</li>
+<li>npm：6.x 及以上</li>
+<li>Koa：2.x</li>
+<li>MySQL：推荐稳定的 5.7 版本及以上</li>
+<li>TypeORM：0.2.x</li>
+</ul>
+<h3 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h3><ul>
+<li>如何编写 <code>Koa</code> 中间件</li>
+<li>通过 <code>@koa/router</code> 实现路由配置</li>
+<li>通过 <code>TypeORM</code> 连接和读写 <code>MySQL</code> 数据库（其他数据库都类似）</li>
+<li>了解 <code>JWT</code> 鉴权的原理，并动手实现</li>
+<li>掌握 <code>Koa</code> 的错误处理机制</li>
+</ul>
+<h3 id="初始代码"><a href="#初始代码" class="headerlink" title="初始代码"></a>初始代码</h3><p>初始化代码的仓库和分支</p>
+<p><code>git clone -b init-porject https://github.com/ANiubilityTeam/koa.git</code></p>
+<p>安装依赖 启动项目</p>
+<p><code>npm install</code> <code>npm start</code></p>
+<p>包含了一个最简单的服务</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">// src/server.ts</span></span><br><span class="line">    </span><br><span class="line"><span class="keyword">import</span> Koa <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cors <span class="keyword">from</span> <span class="string">&#x27;@koa/cors&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> bodyParser <span class="keyword">from</span> <span class="string">&#x27;koa-bodyparser&#x27;</span>;</span><br><span class="line"><span class="comment">// 初始化 Koa 应用实例</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Koa();</span><br><span class="line"><span class="comment">// 注册中间件</span></span><br><span class="line">app.use(cors());</span><br><span class="line">app.use(bodyParser());</span><br><span class="line"><span class="comment">// 响应用户请求</span></span><br><span class="line">app.use(<span class="function">(<span class="params">ctx</span>) =&gt;</span> &#123;</span><br><span class="line">  ctx.body = <span class="string">&#x27;Hello Koa&#x27;</span>;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="comment">// 运行服务器</span></span><br><span class="line">app.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+
+<p>启动后浏览器访问localhost:3000,效果应该是这样的<br><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21f791a609664f79a7d8c8a250296aa4~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>或者 <code>$ curl localhost:3000</code> </p>
+<p>得到 <code>Hello Koat</code></p>
+<h2 id="Koa中间件"><a href="#Koa中间件" class="headerlink" title="Koa中间件"></a>Koa中间件</h2><p>严格意义上来说，Koa 只是一个中间件框架，正如它的介绍所说：</p>
+<blockquote>
+<p>Expressive middleware for node.js using ES2017 async functions.（通过 ES2017 async 函数编写富有表达力的 Node.js 中间件）</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Koa</th>
+<th>Express</th>
+<th>connect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>middleware</td>
+<td>Y</td>
+<td>Y</td>
+<td>Y</td>
+</tr>
+<tr>
+<td>route</td>
+<td></td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>template</td>
+<td></td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>sending files</td>
+<td></td>
+<td>Y</td>
+<td></td>
+</tr>
+<tr>
+<td>jsonp</td>
+<td></td>
+<td>Y</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>可以看出来Koa对标的是<a target="_blank" rel="noopener" href="https://github.com/senchalabs/connect">connect</a>（Express 底层的中间件层），而不包含 Express 所拥有的其他功能，例如路由、模板引擎、发送文件等。</p>
+<h3 id="Express使用的中间件模型"><a href="#Express使用的中间件模型" class="headerlink" title="Express使用的中间件模型"></a>Express使用的中间件模型</h3><p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18d5ac5f44484859abf3a4c51a7d2721~tplv-k3u1fbpfcp-watermark.image" alt="image.png"><br>在Express中，请求（Request）直接依次贯穿各个中间件，最后通过请求处理函数返回响应（Response），非常简单。</p>
+<p>所以Express中请求处理函数是这样的, 两个参数分别对应请求对象（Request）和响应对象（Response)</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span>(<span class="params">req, res</span>) </span>&#123;</span><br><span class="line">  res.send(<span class="string">&#x27;Hello Express&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Koa使用的中间件模型-洋葱模型"><a href="#Koa使用的中间件模型-洋葱模型" class="headerlink" title="Koa使用的中间件模型 - 洋葱模型"></a>Koa使用的中间件模型 - 洋葱模型</h3><p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/892c05eecb054fdcb47d8f771619ff3c~tplv-k3u1fbpfcp-watermark.image" alt="image.png"><br>在Koa中，中间件不像 Express 中间件那样在请求通过了之后就完成了自己的使命；相反，中间件的执行清晰地分为两个阶段。</p>
+<p>就像是一个洋葱，一层包裹一层<br><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/84ffc59d814549b48fc8f717a2036d4a~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>所以Koa中，请求处理函数是这样的，只有一个参数 ctx （Context，上下文），然后只需向上下文对象写入相关的属性即可（例如这里就是写入到返回数据 body 中）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">handler</span>(<span class="params">ctx</span>) </span>&#123;</span><br><span class="line">  ctx.body = <span class="string">&#x27;Hello Koa&#x27;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Koa中间件的定义"><a href="#Koa中间件的定义" class="headerlink" title="Koa中间件的定义"></a>Koa中间件的定义</h3><p>中间件其实也是一个函数</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">middleware</span>(<span class="params">ctx, next</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 第一阶段</span></span><br><span class="line">  <span class="keyword">await</span> next();</span><br><span class="line">  <span class="comment">// 第二阶段</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第一个参数就是 Koa Context，也就是上图中贯穿所有中间件和请求处理函数的绿色箭头所传递的内容，里面封装了请求体和响应体（实际上还有其他属性，但这里暂时不讲），分别可以通过 ctx.request 和 ctx.response 来获取，以下是一些常用的属性：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ctx.url    <span class="comment">// 相当于 ctx.request.url</span></span><br><span class="line">ctx.body   <span class="comment">// 相当于 ctx.response.body</span></span><br><span class="line">ctx.status <span class="comment">// 相当于 ctx.response.status</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>关于所有请求和响应上面的属性及其别称，请参考 <a target="_blank" rel="noopener" href="https://github.com/koajs/koa/blob/master/docs/api/context.md">Context API 文档</a></p>
+</blockquote>
+<p>中间件的第二个参数便是 next 函数，用来把控制权转交给下一个中间件。但是它跟 Express 的 next 函数本质的区别在于，Koa 的<code>next</code>函数返回的是一个 Promise，在这个 Promise 进入完成状态（Fulfilled）后，就会去执行中间件中第二阶段的代码。</p>
+<h3 id="实现一个日志中间件"><a href="#实现一个日志中间件" class="headerlink" title="实现一个日志中间件"></a>实现一个日志中间件</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/logger.ts</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; Context &#125; <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">logger</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">async</span> (ctx: Context, <span class="attr">next</span>: <span class="function">() =&gt;</span> <span class="built_in">Promise</span>&lt;<span class="keyword">void</span>&gt;) =&gt; &#123;</span><br><span class="line">    <span class="keyword">const</span> start = <span class="built_in">Date</span>.now();</span><br><span class="line">    <span class="keyword">await</span> next();</span><br><span class="line">    <span class="keyword">const</span> ms = <span class="built_in">Date</span>.now() - start;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`<span class="subst">$&#123;ctx.method&#125;</span> <span class="subst">$&#123;ctx.url&#125;</span> <span class="subst">$&#123;ctx.status&#125;</span> - <span class="subst">$&#123;ms&#125;</span>ms`</span>);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这个中间件的第一阶段，我们通过 Date.now() 先获取请求进入的时间，然后通过 await next() 让出执行权，等待下游中间件运行结束后，再在第二阶段通过计算 Date.now() 的差值来得出处理请求所用的时间。</p>
+<blockquote>
+<p>这里通过两个 Date.now() 之间的差值来计算运行时间其实是不精确的，为了获取更准确的时间，建议使用 process.hrtime() 。</p>
+</blockquote>
+<p>然后我们在 src/server.ts 中把刚才的 logger 中间件通过 app.use 注册进去，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> &#123; logger &#125; <span class="keyword">from</span> <span class="string">&#x27;./logger&#x27;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="comment">// 初始化 Koa 应用实例</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Koa();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册中间件</span></span><br><span class="line">app.use(logger());</span><br><span class="line">app.use(cors());</span><br><span class="line">app.use(bodyParser());</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+<p>然后通过crul或者浏览器访问localhost:3000</p>
+<p>终端会打印</p>
+<p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fbdba0dff89445f2a45ac1c44c217de9~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<h2 id="Koa路由配置"><a href="#Koa路由配置" class="headerlink" title="Koa路由配置"></a>Koa路由配置</h2><p>由于 Koa 只是一个中间件框架，所以路由的实现需要独立的 npm 包。首先安装 @koa/router 及其 TypeScript 类型定义</p>
+<p><code>$ npm install @koa/router</code></p>
+<p><code>$ npm install @types/koa__router -D</code></p>
+<blockquote>
+<p>有些教程使用 koa-router ，但由于 koa-router 目前处于几乎无人维护的状态，所以我们这里使用维护更积极的 Fork 版本 @koa/router。</p>
+</blockquote>
+<h3 id="路由规划"><a href="#路由规划" class="headerlink" title="路由规划"></a>路由规划</h3><ul>
+<li>GET /users ：查询所有的用户</li>
+<li>GET /users/:id ：查询单个用户</li>
+<li>PUT /users/:id ：更新单个用户</li>
+<li>DELETE /users/:id ：删除单个用户</li>
+<li>POST /users/login ：登录（获取 JWT Token）</li>
+<li>POST /users/register ：注册用户</li>
+</ul>
+<h3 id="创建控制器"><a href="#创建控制器" class="headerlink" title="创建控制器"></a>创建控制器</h3><p>在 src 中创建 controllers 目录，用于存放控制器有关的代码。首先是 AuthController </p>
+<p>创建 src/controllers/auth.ts ，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; Context &#125; <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthController</span> </span>&#123;</span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">login</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">&#x27;Login controller&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">register</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">&#x27;Register controller&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后创建 src/controllers/user.ts，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> &#123; Context &#125; <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">listUsers</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">&#x27;ListUsers controller&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">showUserDetail</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">`ShowUserDetail controller with ID = <span class="subst">$&#123;ctx.params.id&#125;</span>`</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">updateUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">`UpdateUser controller with ID = <span class="subst">$&#123;ctx.params.id&#125;</span>`</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">deleteUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">`DeleteUser controller with ID = <span class="subst">$&#123;ctx.params.id&#125;</span>`</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建路由"><a href="#创建路由" class="headerlink" title="创建路由"></a>创建路由</h3><p>然后我们创建 src/routes.ts，用于把控制器挂载到对应的路由上面</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Router <span class="keyword">from</span> <span class="string">&#x27;@koa/router&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> AuthController <span class="keyword">from</span> <span class="string">&#x27;./controllers/auth&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> UserController <span class="keyword">from</span> <span class="string">&#x27;./controllers/user&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> router = <span class="keyword">new</span> Router();</span><br><span class="line"></span><br><span class="line"><span class="comment">// auth 相关的路由</span></span><br><span class="line">router.post(<span class="string">&#x27;/auth/login&#x27;</span>, AuthController.login);</span><br><span class="line">router.post(<span class="string">&#x27;/auth/register&#x27;</span>, AuthController.register);</span><br><span class="line"></span><br><span class="line"><span class="comment">// users 相关的路由</span></span><br><span class="line">router.get(<span class="string">&#x27;/users&#x27;</span>, UserController.listUsers);</span><br><span class="line">router.get(<span class="string">&#x27;/users/:id&#x27;</span>, UserController.showUserDetail);</span><br><span class="line">router.put(<span class="string">&#x27;/users/:id&#x27;</span>, UserController.updateUser);</span><br><span class="line">router.delete(<span class="string">&#x27;/users/:id&#x27;</span>, UserController.deleteUser);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> router;</span><br></pre></td></tr></table></figure>
+<h3 id="注册路由"><a href="#注册路由" class="headerlink" title="注册路由"></a>注册路由</h3><p>将 router 注册为中间件。打开 src/server.ts，修改代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> router <span class="keyword">from</span> <span class="string">&#x27;./routes&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; logger &#125; <span class="keyword">from</span> <span class="string">&#x27;./logger&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化 Koa 应用实例</span></span><br><span class="line"><span class="keyword">const</span> app = <span class="keyword">new</span> Koa();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册中间件</span></span><br><span class="line">app.use(logger());</span><br><span class="line">app.use(cors());</span><br><span class="line">app.use(bodyParser());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 响应用户请求</span></span><br><span class="line">app.use(router.routes()).use(router.allowedMethods());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行服务器</span></span><br><span class="line">app.listen(<span class="number">3000</span>);</span><br></pre></td></tr></table></figure>
+<p>调用 router 对象的 routes 方法获取到对应的 Koa 中间件，还调用了 allowedMethods 方法注册了 HTTP 方法检测的中间件，这样当用户通过不正确的 HTTP 方法访问 API 时，就会自动返回 405 Method Not Allowed 状态码。</p>
+<p>我们通过 Curl 来测试路由</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ curl localhost:3000/hello</span><br><span class="line">Not Found</span><br><span class="line">$ curl localhost:3000/auth/register</span><br><span class="line">Method Not Allowed</span><br><span class="line">$ curl -X POST localhost:3000/auth/register</span><br><span class="line">Register controller</span><br><span class="line">$ curl -X POST localhost:3000/auth/login</span><br><span class="line">Login controller</span><br><span class="line">$ curl localhost:3000/users</span><br><span class="line">ListUsers controller</span><br><span class="line">$ curl localhost:3000/users/123</span><br><span class="line">ShowUserDetail controller with ID = 123</span><br><span class="line">$ curl -X PUT localhost:3000/users/123</span><br><span class="line">UpdateUser controller with ID = 123</span><br><span class="line">$ curl -X DELETE localhost:3000/users/123</span><br><span class="line">DeleteUser controller with ID = 123</span><br></pre></td></tr></table></figure>
+
+<h2 id="接入MySQL"><a href="#接入MySQL" class="headerlink" title="接入MySQL"></a>接入MySQL</h2><p>Koa 本身是一个中间件框架，理论上可以接入任何类型的数据库，这里我们选择流行的关系型数据库 MySQL。并且，由于我们使用了 TypeScript 开发，因此这里使用为 TS 量身打造的 <a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2019/02/orm-tutorial.html">ORM</a> 库 TypeORM。</p>
+<h3 id="准备数据库"><a href="#准备数据库" class="headerlink" title="准备数据库"></a>准备数据库</h3><ul>
+<li>官网下载安装包，这里是<a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/mysql/">下载地址</a></li>
+<li>安装好后，启动数据库，macOS是在 系统偏好设置 - MySQL - Start MySQL Server</li>
+<li>连接数据库<code>mysql -u root -p</code></li>
+<li>输入安装数据库时设置的密码</li>
+<li>创建数据库<code>CREATE DATABASE koa;</code></li>
+<li>创建用户并授予权限<code>CREATE USER &#39;user&#39;@&#39;localhost&#39; IDENTIFIED BY &#39;pass&#39;;</code> <code>GRANT ALL PRIVILEGES ON koa.* TO &#39;user&#39;@&#39;localhost&#39;;</code></li>
+<li>处理 MySQL 8.0 版本的认证协议问题<code>ALTER USER &#39;user&#39;@&#39;localhost&#39; IDENTIFIED WITH mysql_native_password BY &#39;pass&#39;;</code> <code>flush privileges;</code></li>
+</ul>
+<h3 id="配置和连接TypeORM"><a href="#配置和连接TypeORM" class="headerlink" title="配置和连接TypeORM"></a>配置和连接TypeORM</h3><p>安装相关的 npm 包，分别是 MySQL 驱动、TypeORM 及 reflect-metadata（反射 API 库，用于 TypeORM 推断模型的元数据）</p>
+<p><code>$ npm install mysql typeorm reflect-metadata</code></p>
+<p>然后在项目根目录创建 ormconfig.json ，TypeORM 会读取这个数据库配置进行连接，代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;type&quot;</span>: <span class="string">&quot;mysql&quot;</span>,</span><br><span class="line">  <span class="string">&quot;host&quot;</span>: <span class="string">&quot;localhost&quot;</span>,</span><br><span class="line">  <span class="string">&quot;port&quot;</span>: <span class="number">3306</span>,</span><br><span class="line">  <span class="string">&quot;username&quot;</span>: <span class="string">&quot;user&quot;</span>,</span><br><span class="line">  <span class="string">&quot;password&quot;</span>: <span class="string">&quot;pass&quot;</span>,</span><br><span class="line">  <span class="string">&quot;database&quot;</span>: <span class="string">&quot;koa&quot;</span>,</span><br><span class="line">  <span class="string">&quot;synchronize&quot;</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="string">&quot;entities&quot;</span>: [<span class="string">&quot;src/entity/*.ts&quot;</span>],</span><br><span class="line">  <span class="string">&quot;cli&quot;</span>: &#123;</span><br><span class="line">    <span class="string">&quot;entitiesDir&quot;</span>: <span class="string">&quot;src/entity&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>database 就是我们刚刚创建的 koa 数据库</li>
+<li>synchronize 设为 true 能够让我们每次修改模型定义后都能自动同步到数据库（如果你接触过其他的 ORM 库，其实就是自动数据迁移）</li>
+<li>entities 字段定义了模型文件的路径，我们马上就来创建</li>
+</ul>
+<p>接着修改 src/server.ts，在其中连接数据库，代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Koa <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> cors <span class="keyword">from</span> <span class="string">&#x27;@koa/cors&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> bodyParser <span class="keyword">from</span> <span class="string">&#x27;koa-bodyparser&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; createConnection &#125; <span class="keyword">from</span> <span class="string">&#x27;typeorm&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;reflect-metadata&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> router <span class="keyword">from</span> <span class="string">&#x27;./routes&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; logger &#125; <span class="keyword">from</span> <span class="string">&#x27;./logger&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化 Koa 应用实例</span></span><br><span class="line">createConnection()</span><br><span class="line">  .then(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> app = <span class="keyword">new</span> Koa();</span><br><span class="line">    <span class="comment">// 注册中间件</span></span><br><span class="line">    app.use(logger());</span><br><span class="line">    app.use(cors());</span><br><span class="line">    app.use(bodyParser());</span><br><span class="line">    <span class="comment">// 响应用户请求</span></span><br><span class="line">    app.use(router.routes()).use(router.allowedMethods());</span><br><span class="line">    <span class="comment">// 运行服务器</span></span><br><span class="line">    app.listen(<span class="number">3000</span>);</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(<span class="function">(<span class="params">err: string</span>) =&gt;</span> <span class="built_in">console</span>.log(<span class="string">&#x27;TypeORM connection error:&#x27;</span>, err));</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="创建数据模型定义"><a href="#创建数据模型定义" class="headerlink" title="创建数据模型定义"></a>创建数据模型定义</h3><p>创建src/entity/user.ts , 用于存放数据模型定义文件,代表用户模型</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Entity, Column, PrimaryGeneratedColumn &#125; <span class="keyword">from</span> <span class="string">&#x27;typeorm&#x27;</span>;</span><br><span class="line"></span><br><span class="line">@Entity()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">  @PrimaryGeneratedColumn()</span><br><span class="line">  <span class="attr">id</span>: number;</span><br><span class="line"></span><br><span class="line">  @Column()</span><br><span class="line">  <span class="attr">name</span>: string;</span><br><span class="line"></span><br><span class="line">  @Column(&#123; <span class="attr">select</span>: <span class="literal">false</span> &#125;)</span><br><span class="line">  <span class="attr">password</span>: string;</span><br><span class="line"></span><br><span class="line">  @Column()</span><br><span class="line">  <span class="attr">email</span>: string;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>TypeORM通过<a target="_blank" rel="noopener" href="https://www.tslang.cn/docs/handbook/decorators.html">装饰器</a>这种优雅的方式来将我们的 User 类映射到数据库中的表。这里我们使用了三个装饰器：</p>
+<ul>
+<li>Entity 用于装饰整个类，使其变成一个数据库模型</li>
+<li>Column 用于装饰类的某个属性，使其对应于数据库表中的一列，可提供一系列选项参数，例如我们给 password 设置了 select: false ，使得这个字段在查询时默认不被选中</li>
+<li>PrimaryGeneratedColumn 则是装饰主列，它的值将自动生成<blockquote>
+<p>关于 TypeORM 所有的装饰器定义及其详细使用，请参考其<a target="_blank" rel="noopener" href="https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/decorator-reference.md">装饰器文档</a>。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="控制器中操作数据库"><a href="#控制器中操作数据库" class="headerlink" title="控制器中操作数据库"></a>控制器中操作数据库</h3><p>然后就可以在 Controller 中进行数据的增删改查操作了。首先我们打开 src/controllers/user.ts ，实现所有 Controller 的逻辑</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Context &#125; <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; getManager &#125; <span class="keyword">from</span> <span class="string">&#x27;typeorm&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; User &#125; <span class="keyword">from</span> <span class="string">&#x27;../entity/user&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">listUsers</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ctx.body = &#x27;ListUsers controller&#x27;;</span></span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="keyword">const</span> users = <span class="keyword">await</span> userRepository.find();</span><br><span class="line">  </span><br><span class="line">    ctx.status = <span class="number">200</span>;</span><br><span class="line">    ctx.body = users;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">showUserDetail</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ctx.body = `ShowUserDetail controller with ID = $&#123;ctx.params.id&#125;`;</span></span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="keyword">const</span> user = <span class="keyword">await</span> userRepository.findOne(+ctx.params.id);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (user) &#123;</span><br><span class="line">      ctx.status = <span class="number">200</span>;</span><br><span class="line">      ctx.body = user;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      ctx.status = <span class="number">404</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">updateUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ctx.body = `UpdateUser controller with ID = $&#123;ctx.params.id&#125;`;</span></span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="keyword">await</span> userRepository.update(+ctx.params.id, ctx.request.body);</span><br><span class="line">    <span class="keyword">const</span> updatedUser = <span class="keyword">await</span> userRepository.findOne(+ctx.params.id);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (updatedUser) &#123;</span><br><span class="line">      ctx.status = <span class="number">200</span>;</span><br><span class="line">      ctx.body = updatedUser;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      ctx.status = <span class="number">404</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">deleteUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ctx.body = `DeleteUser controller with ID = $&#123;ctx.params.id&#125;`;</span></span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="keyword">await</span> userRepository.delete(+ctx.params.id);</span><br><span class="line">  </span><br><span class="line">    ctx.status = <span class="number">204</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>TypeORM</code> 中操作数据模型主要是通过 <code>Repository</code> 实现的，在 <code>Controller</code> 中，可以通过 <code>getManager().getRepository(Model)</code> 来获取到，之后 <code>Repository</code> 的查询 <code>API</code> 就与其他的库很类似了。</p>
+<blockquote>
+<p>关于 Repository 所有的查询 API，请参考<a target="_blank" rel="noopener" href="https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/repository-api.md">这里</a>的文档。</p>
+</blockquote>
+<p>还可以通过 <code>ctx.request.body</code> 获取到了请求体的数据，这是我们在第一步就配置好的 <code>bodyParser</code> 中间件在 <code>Context</code> 对象中添加的。</p>
+<p>然后修改 AuthController ，实现具体的注册逻辑。由于密码不能明文保存在数据库中，需要使用<code>hash</code>算法进行加密，这里我们使用曾经获得过密码加密大赛冠军的 <a target="_blank" rel="noopener" href="https://www.argon2.com/">Argon2</a> 算法。安装对应的 npm 包</p>
+<p><code>npm install argon2</code></p>
+<p>然后实现具体的 <code>register Controller</code>，修改 <code>src/controllers/auth.ts</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; Context &#125; <span class="keyword">from</span> <span class="string">&#x27;koa&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> argon2 <span class="keyword">from</span> <span class="string">&#x27;argon2&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; getManager &#125; <span class="keyword">from</span> <span class="string">&#x27;typeorm&#x27;</span>;</span><br><span class="line">  </span><br><span class="line"><span class="keyword">import</span> &#123; User &#125; <span class="keyword">from</span> <span class="string">&#x27;../entity/user&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthController</span> </span>&#123;</span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">login</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    ctx.body = <span class="string">&#x27;Login controller&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">register</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ctx.body = &#x27;Register controller&#x27;;</span></span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">const</span> newUser = <span class="keyword">new</span> User();</span><br><span class="line">    newUser.name = ctx.request.body.name;</span><br><span class="line">    newUser.email = ctx.request.body.email;</span><br><span class="line">    newUser.password = <span class="keyword">await</span> argon2.hash(ctx.request.body.password);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 保存到数据库</span></span><br><span class="line">    <span class="keyword">const</span> user = <span class="keyword">await</span> userRepository.save(newUser);</span><br><span class="line">  </span><br><span class="line">    ctx.status = <span class="number">201</span>;</span><br><span class="line">    ctx.body = user;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用<code>postman</code>调用<code>localhost:3000/auth/register</code>，并且传入对应的参数</p>
+<p>在数据库中会看到记录了对应的数据</p>
+<h2 id="JWT-鉴权"><a href="#JWT-鉴权" class="headerlink" title="JWT 鉴权"></a>JWT 鉴权</h2><p><code>JSON Web Token（JWT）</code>是一种流行的 <code>RESTful API</code> 鉴权方案。这里我们将手把手带你学会如何在 <code>Koa</code> 框架中使用 <code>JWT</code> 鉴权，可参考<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html">这篇文章</a>进行学习。</p>
+<p>首先安装相关的 npm 包</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install koa-jwt jsonwebtoken</span><br><span class="line">npm install @types/jsonwebtoken -D</span><br></pre></td></tr></table></figure>
+
+<p>生成密钥，实际生产环境需要利用非对称加密生成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> JWT_SECRET = <span class="string">&#x27;secret&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="重新规划路由"><a href="#重新规划路由" class="headerlink" title="重新规划路由"></a>重新规划路由</h3><p>有些路由我们希望只有已登录的用户才有权查看（受保护的路由），而另一些路由则是所有请求都可以访问（不受保护的路由）。在 <code>Koa</code> 的洋葱模型中，我们可以这样实现</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1294b1ce42a24120ab463e2993cbbda9~tplv-k3u1fbpfcp-watermark.image" alt="image.png"></p>
+<p>所有请求都可以直接访问未受保护的路由，但是受保护的路由就放在 <code>JWT</code> 中间件的后面（或者从洋葱模型的角度看是 “里面”），这样对于没有携带 <code>JWT Token</code> 的请求就直接返回，而不会继续传递下去</p>
+<p>修改<code>src/routes.ts</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Router <span class="keyword">from</span> <span class="string">&#x27;@koa/router&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> AuthController <span class="keyword">from</span> <span class="string">&#x27;./controllers/auth&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> UserController <span class="keyword">from</span> <span class="string">&#x27;./controllers/user&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> unprotectedRouter = <span class="keyword">new</span> Router();</span><br><span class="line"></span><br><span class="line"><span class="comment">// auth 相关的路由</span></span><br><span class="line">unprotectedRouter.post(<span class="string">&#x27;/auth/login&#x27;</span>, AuthController.login);</span><br><span class="line">unprotectedRouter.post(<span class="string">&#x27;/auth/register&#x27;</span>, AuthController.register);</span><br><span class="line">  </span><br><span class="line"><span class="keyword">const</span> protectedRouter = <span class="keyword">new</span> Router();</span><br><span class="line"></span><br><span class="line"><span class="comment">// users 相关的路由</span></span><br><span class="line">protectedRouter.get(<span class="string">&#x27;/users&#x27;</span>, UserController.listUsers);</span><br><span class="line">protectedRouter.get(<span class="string">&#x27;/users/:id&#x27;</span>, UserController.showUserDetail);</span><br><span class="line">protectedRouter.put(<span class="string">&#x27;/users/:id&#x27;</span>, UserController.updateUser);</span><br><span class="line">protectedRouter.delete(<span class="string">&#x27;/users/:id&#x27;</span>, UserController.deleteUser);</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> &#123; protectedRouter, unprotectedRouter &#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="注册JWT中间件"><a href="#注册JWT中间件" class="headerlink" title="注册JWT中间件"></a>注册JWT中间件</h3><p>修改<code>src/server.ts</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> jwt <span class="keyword">from</span> <span class="string">&#x27;koa-jwt&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&#x27;reflect-metadata&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// import router from &#x27;./routes&#x27;;</span></span><br><span class="line"><span class="keyword">import</span> &#123; protectedRouter, unprotectedRouter &#125; <span class="keyword">from</span> <span class="string">&#x27;./routes&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; logger &#125; <span class="keyword">from</span> <span class="string">&#x27;./logger&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; JWT_SECRET &#125; <span class="keyword">from</span> <span class="string">&#x27;./constants&#x27;</span>;</span><br><span class="line"></span><br><span class="line">createConnection()</span><br><span class="line">  .then(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 响应用户请求</span></span><br><span class="line">    <span class="comment">// app.use(router.routes()).use(router.allowedMethods());</span></span><br><span class="line">    <span class="comment">// 无需 JWT Token 即可访问</span></span><br><span class="line">    app.use(unprotectedRouter.routes()).use(unprotectedRouter.allowedMethods());</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 注册 JWT 中间件</span></span><br><span class="line">    <span class="comment">// app.use(jwt(&#123; secret: JWT_SECRET &#125;).unless(&#123; method: &#x27;GET&#x27; &#125;));</span></span><br><span class="line">    <span class="comment">// 需要 JWT Token 才可访问</span></span><br><span class="line">    app.use(protectedRouter.routes()).use(protectedRouter.allowedMethods());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在 JWT 中间件注册完毕后，如果用户请求携带了有效的 <code>Token</code>，后面的 <code>protectedRouter</code> 就可以通过 <code>ctx.state.user</code> 获取到 <code>Token</code> 的内容（更精确的说法是 <code>Payload</code>，负载，一般是用户的关键信息，例如 ID）了；反之，如果 <code>Token</code> 缺失或无效，那么 <code>JWT</code> 中间件会直接自动返回 <code>401</code> 错误。关于 <code>koa-jwt</code> 的更多使用细节，请参考其<a target="_blank" rel="noopener" href="https://github.com/koajs/jwt">文档</a>。</p>
+</blockquote>
+<h3 id="在-Login-中签发-JWT-Token"><a href="#在-Login-中签发-JWT-Token" class="headerlink" title="在 Login 中签发 JWT Token"></a>在 Login 中签发 JWT Token</h3><p>我们需要提供一个 API 端口让用户可以获取到 <code>JWT Token</code>，最合适的当然是登录接口 <code>/auth/login</code>。打开 <code>src/controllers/auth.ts</code> ，在 <code>login</code> 控制器中实现签发 <code>JWT Token</code> 的逻辑，代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> jwt <span class="keyword">from</span> <span class="string">&#x27;jsonwebtoken&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> &#123; JWT_SECRET &#125; <span class="keyword">from</span> <span class="string">&#x27;../constants&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthController</span> </span>&#123;</span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">login</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ctx.body = &#x27;Login controller&#x27;;</span></span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">const</span> user = <span class="keyword">await</span> userRepository</span><br><span class="line">      .createQueryBuilder()</span><br><span class="line">      .where(&#123; <span class="attr">name</span>: ctx.request.body.name &#125;)</span><br><span class="line">      .addSelect(<span class="string">&#x27;User.password&#x27;</span>)</span><br><span class="line">      .getOne();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (!user) &#123;</span><br><span class="line">      ctx.status = <span class="number">401</span>;</span><br><span class="line">      ctx.body = &#123; <span class="attr">message</span>: <span class="string">&#x27;用户名不存在&#x27;</span> &#125;;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">await</span> argon2.verify(user.password, ctx.request.body.password)) &#123;</span><br><span class="line">      ctx.status = <span class="number">200</span>;</span><br><span class="line">      ctx.body = &#123; <span class="attr">token</span>: jwt.sign(&#123; <span class="attr">id</span>: user.id &#125;, JWT_SECRET) &#125;;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      ctx.status = <span class="number">401</span>;</span><br><span class="line">      ctx.body = &#123; <span class="attr">message</span>: <span class="string">&#x27;密码错误&#x27;</span> &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>login</code> 中，我们首先根据用户名（请求体中的 <code>name</code> 字段）查询对应的用户，如果该用户不存在，则直接返回 <code>401</code>；存在的话再通过 <code>argon2.verify</code> 来验证请求体中的明文密码 <code>password</code> 是否和数据库中存储的加密密码是否一致，如果一致则通过 <code>jwt.sign</code> 签发 <code>Token</code>，如果不一致则还是返回 <code>401</code>。</p>
+<p>这里的 <code>Token</code> 负载就是标识用户 <code>ID</code> 的对象 <code>&#123; id: user.id &#125;</code> ，这样后面鉴权成功后就可以通过 <code>ctx.user.id</code> 来获取用户 <code>ID</code>。</p>
+<h3 id="在-User-控制器中添加访问控制"><a href="#在-User-控制器中添加访问控制" class="headerlink" title="在 User 控制器中添加访问控制"></a>在 User 控制器中添加访问控制</h3><p><code>Token</code> 的中间件和签发都搞定之后，最后一步就是在合适的地方校验用户的 <code>Token</code>，确认其是否有足够的权限。最典型的场景便是，在更新或删除用户时，我们要确保是用户本人在操作。打开 <code>src/controllers/user.ts</code> ，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">updateUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> userId = +ctx.params.id;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (userId !== +ctx.state.user.id) &#123;</span><br><span class="line">      ctx.status = <span class="number">403</span>;</span><br><span class="line">      ctx.body = &#123; <span class="attr">message</span>: <span class="string">&#x27;无权进行此操作&#x27;</span> &#125;;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="comment">// await userRepository.update(+ctx.params.id, ctx.request.body);</span></span><br><span class="line">    <span class="comment">// const updatedUser = await userRepository.findOne(+ctx.params.id);</span></span><br><span class="line">    <span class="keyword">await</span> userRepository.update(userId, ctx.request.body);</span><br><span class="line">    <span class="keyword">const</span> updatedUser = <span class="keyword">await</span> userRepository.findOne(userId);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">deleteUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> userId = +ctx.params.id;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">if</span> (userId !== +ctx.state.user.id) &#123;</span><br><span class="line">      ctx.status = <span class="number">403</span>;</span><br><span class="line">      ctx.body = &#123; <span class="attr">message</span>: <span class="string">&#x27;无权进行此操作&#x27;</span> &#125;;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="comment">// await userRepository.delete(+ctx.params.id);</span></span><br><span class="line">    <span class="keyword">await</span> userRepository.delete(userId);</span><br><span class="line"></span><br><span class="line">    ctx.status = <span class="number">204</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>两个 <code>Controller</code> 的鉴权逻辑基本相同，我们通过比较 <code>ctx.params.id</code> 和 <code>ctx.state.user.id</code> 是否相同，如果不相同则返回 <code>403 Forbidden</code> 错误，相同则继续执行相应的数据库操作。</p>
+<h2 id="实现自定义错误（异常）"><a href="#实现自定义错误（异常）" class="headerlink" title="实现自定义错误（异常）"></a>实现自定义错误（异常）</h2><p>首先，让我们来实现一些自定义的错误（或者异常，本文不作区分）类。创建 <code>src/exceptions.ts</code> ，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseException</span> <span class="keyword">extends</span> <span class="title">Error</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 状态码</span></span><br><span class="line">  <span class="attr">status</span>: number;</span><br><span class="line">  <span class="comment">// 提示信息</span></span><br><span class="line">  message: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">NotFoundException</span> <span class="keyword">extends</span> <span class="title">BaseException</span> </span>&#123;</span><br><span class="line">  status = <span class="number">404</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">msg?: string</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    <span class="built_in">this</span>.message = msg || <span class="string">&#x27;无此内容&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">UnauthorizedException</span> <span class="keyword">extends</span> <span class="title">BaseException</span> </span>&#123;</span><br><span class="line">  status = <span class="number">401</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">msg?: string</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    <span class="built_in">this</span>.message = msg || <span class="string">&#x27;尚未登录&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">ForbiddenException</span> <span class="keyword">extends</span> <span class="title">BaseException</span> </span>&#123;</span><br><span class="line">  status = <span class="number">403</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">msg?: string</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>();</span><br><span class="line">    <span class="built_in">this</span>.message = msg || <span class="string">&#x27;权限不足&#x27;</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的错误类型参考了 <a target="_blank" rel="noopener" href="https://docs.nestjs.cn/7/exceptionfilters">Nest.js</a> 的设计。出于学习目的，这里作了简化，并且只实现了我们需要用到的错误</p>
+<h3 id="在-Controller-中使用自定义错误"><a href="#在-Controller-中使用自定义错误" class="headerlink" title="在 Controller 中使用自定义错误"></a>在 Controller 中使用自定义错误</h3><p>接着我们便可以在 <code>Controller</code> 中使用刚才的自定义错误了。打开 <code>src/controllers/auth.ts</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> &#123; UnauthorizedException &#125; <span class="keyword">from</span> <span class="string">&#x27;../exceptions&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthController</span> </span>&#123;</span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">login</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!user) &#123;</span><br><span class="line">      <span class="comment">// ctx.status = 401;</span></span><br><span class="line">      <span class="comment">// ctx.body = &#123; message: &#x27;用户名不存在&#x27; &#125;;</span></span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> UnauthorizedException(<span class="string">&#x27;用户名不存在&#x27;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">await</span> argon2.verify(user.password, ctx.request.body.password)) &#123;</span><br><span class="line">      ctx.status = <span class="number">200</span>;</span><br><span class="line">      ctx.body = &#123; <span class="attr">token</span>: jwt.sign(&#123; <span class="attr">id</span>: user.id &#125;, JWT_SECRET) &#125;;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// ctx.status = 401;</span></span><br><span class="line">      <span class="comment">// ctx.body = &#123; message: &#x27;密码错误&#x27; &#125;;</span></span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> UnauthorizedException(<span class="string">&#x27;密码错误&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，我们将直接手动设置状态码和响应体的代码改成了简单的错误抛出，代码清晰了很多。</p>
+<blockquote>
+<p>Koa 的 Context 对象提供了一个便捷方法 throw ，同样可以抛出异常，例如 ctx.throw(400, ‘Bad request’)。</p>
+</blockquote>
+<p>同样地，修改 <code>UserController</code> 相关的逻辑。修改 <code>src/controllers/user.ts</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">import</span> &#123; NotFoundException, ForbiddenException &#125; <span class="keyword">from</span> <span class="string">&#x27;../exceptions&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">showUserDetail</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> userRepository = getManager().getRepository(User);</span><br><span class="line">    <span class="keyword">const</span> user = <span class="keyword">await</span> userRepository.findOne(+ctx.params.id);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (user) &#123;</span><br><span class="line">      ctx.status = <span class="number">200</span>;</span><br><span class="line">      ctx.body = user;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// ctx.status = 404;</span></span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> NotFoundException();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">updateUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> userId = +ctx.params.id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (userId !== +ctx.state.user.id) &#123;</span><br><span class="line">      <span class="comment">// ctx.status = 403;</span></span><br><span class="line">      <span class="comment">// ctx.body = &#123; message: &#x27;无权进行此操作&#x27; &#125;;</span></span><br><span class="line">      <span class="comment">// return;</span></span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> ForbiddenException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line"> <span class="comment">// ...</span></span><br><span class="line">  public <span class="keyword">static</span> <span class="keyword">async</span> <span class="function"><span class="title">deleteUser</span>(<span class="params">ctx: Context</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> userId = +ctx.params.id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (userId !== +ctx.state.user.id) &#123;</span><br><span class="line">      <span class="comment">// ctx.status = 403;</span></span><br><span class="line">      <span class="comment">// ctx.body = &#123; message: &#x27;无权进行此操作&#x27; &#125;;</span></span><br><span class="line">      <span class="comment">// return;</span></span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> ForbiddenException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加错误处理中间件"><a href="#添加错误处理中间件" class="headerlink" title="添加错误处理中间件"></a>添加错误处理中间件</h3><p>最后，我们需要添加错误处理中间件来捕获在 <code>Controller</code> 中抛出的错误。打开 <code>src/server.ts</code> ，实现错误处理中间件</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">createConnection()</span><br><span class="line">  .then(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册中间件</span></span><br><span class="line">    app.use(logger());</span><br><span class="line">    app.use(cors());</span><br><span class="line">    app.use(bodyParser());</span><br><span class="line"></span><br><span class="line">    app.use(<span class="keyword">async</span> (ctx, next) =&gt; &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">await</span> next();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">        <span class="comment">// 只返回 JSON 格式的响应</span></span><br><span class="line">        ctx.status = err.status || <span class="number">500</span>;</span><br><span class="line">        ctx.body = &#123; <span class="attr">message</span>: err.message &#125;;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Koa/" rel="tag"># Koa</a>
+              <a href="/tags/TypeORM/" rel="tag"># TypeORM</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/19/Vue3+Vite+ts+ElementPlus%E9%A1%B9%E7%9B%AE%E6%90%AD%E5%BB%BA/" rel="prev" title="Vue3.0 + Vite + TS + ElementPlus项目搭建">
+                  <i class="fa fa-chevron-left"></i> Vue3.0 + Vite + TS + ElementPlus项目搭建
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/10/CommonJS%20%E5%92%8C%20ES%20Modules%E7%9A%84%E5%8C%BA%E5%88%AB/" rel="next" title="CommonJ 和 ES Modules的区别">
+                  CommonJ 和 ES Modules的区别 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Niubility Team</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+</body>
+</html>
