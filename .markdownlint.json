@@ -1,0 +1,14 @@
+/* markdowm 语法规则配置 */
+/* 除了单独配置外, 还可以使用cli 统一配置 */
+/* 或者直接使用注释 废止 markdownlint 的警告
+    只需要在页面最顶部添加 <!-- markdownlint-disable 编号 --> 即可
+    例如 <!-- markdownlint-disable MD013 --> 等同于 "MD013": false,
+*/
+{
+  "default": true,
+  "MD013": false,
+  "MD033": {
+    "allowed_elements": ["details", "summary"]
+  }
+}
+
