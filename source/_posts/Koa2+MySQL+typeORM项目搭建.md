@@ -1,22 +1,24 @@
 ---
 title: Koa+MySQL+TypeORM项目搭建
 author: piers
-tags: 
+tags:
   - Koa
   - TypeORM
   - MySQL
-categories: 
+categories:
   - 前端工程化
 description: Koa作为Express原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对Promise以及async/await异步编程的完全支持，Koa框架自从诞生以来就吸引了无数Node爱好者。然而Koa本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持...
 date: 2021-06-24
 ---
 
 ## 简介
+
 `Koa` 作为 `Express` 原班人马打造的新生代 Node.js Web 框架，自从发布以来就备受瞩目。凭借精巧的 “洋葱模型” 和对 `Promise` 以及 `async/await` 异步编程的完全支持，`Koa` 框架自从诞生以来就吸引了无数 Node 爱好者。然而 `Koa` 本身只是一个简单的中间件框架，要想实现一个足够复杂的 Web 应用还需要很多周边生态支持。
 
 ## 准备
 
 ### 环境准备
+
 - Node.js：10.x 及以上
 - npm：6.x 及以上
 - Koa：2.x
@@ -24,6 +26,7 @@ date: 2021-06-24
 - TypeORM：0.2.x
 
 ### 学习目标
+
 - 如何编写 `Koa` 中间件
 - 通过 `@koa/router` 实现路由配置
 - 通过 `TypeORM` 连接和读写 `MySQL` 数据库（其他数据库都类似）
@@ -31,6 +34,7 @@ date: 2021-06-24
 - 掌握 `Koa` 的错误处理机制
 
 ### 初始代码
+
 初始化代码的仓库和分支
 
 `git clone -b init-porject https://github.com/ANiubilityTeam/koa.git`
@@ -42,11 +46,11 @@ date: 2021-06-24
 包含了一个最简单的服务
 
 ```javascript
-    // src/server.ts
-    
-import Koa from 'koa';
-import cors from '@koa/cors';
-import bodyParser from 'koa-bodyparser';
+// src/server.ts
+
+import Koa from "koa";
+import cors from "@koa/cors";
+import bodyParser from "koa-bodyparser";
 // 初始化 Koa 应用实例
 const app = new Koa();
 // 注册中间件
@@ -54,61 +58,68 @@ app.use(cors());
 app.use(bodyParser());
 // 响应用户请求
 app.use((ctx) => {
-  ctx.body = 'Hello Koa';
+  ctx.body = "Hello Koa";
 });
 // 运行服务器
 app.listen(3000);
 ```
 
-启动后浏览器访问localhost:3000,效果应该是这样的
+启动后浏览器访问 localhost:3000,效果应该是这样的
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/21f791a609664f79a7d8c8a250296aa4~tplv-k3u1fbpfcp-watermark.image)
 
-或者 `$ curl localhost:3000` 
+或者 `$ curl localhost:3000`
 
 得到 `Hello Koat`
 
-## Koa中间件
+## Koa 中间件
+
 严格意义上来说，Koa 只是一个中间件框架，正如它的介绍所说：
+
 > Expressive middleware for node.js using ES2017 async functions.（通过 ES2017 async 函数编写富有表达力的 Node.js 中间件）
 
-| Feature | Koa | Express | connect |
-| --- | --- | --- | --- |
-| middleware | Y | Y | Y |
-| route |  | Y |  |
-| template |  | Y |  |
-| sending files |  | Y |  |
-| jsonp |  | Y |  |
+| Feature       | Koa | Express | connect |
+| ------------- | --- | ------- | ------- |
+| middleware    | Y   | Y       | Y       |
+| route         |     | Y       |         |
+| template      |     | Y       |         |
+| sending files |     | Y       |         |
+| jsonp         |     | Y       |         |
 
-可以看出来Koa对标的是[connect](https://github.com/senchalabs/connect)（Express 底层的中间件层），而不包含 Express 所拥有的其他功能，例如路由、模板引擎、发送文件等。
+可以看出来 Koa 对标的是[connect](https://github.com/senchalabs/connect)（Express 底层的中间件层），而不包含 Express 所拥有的其他功能，例如路由、模板引擎、发送文件等。
 
-### Express使用的中间件模型
+### Express 使用的中间件模型
+
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/18d5ac5f44484859abf3a4c51a7d2721~tplv-k3u1fbpfcp-watermark.image)
-在Express中，请求（Request）直接依次贯穿各个中间件，最后通过请求处理函数返回响应（Response），非常简单。
+在 Express 中，请求（Request）直接依次贯穿各个中间件，最后通过请求处理函数返回响应（Response），非常简单。
 
-所以Express中请求处理函数是这样的, 两个参数分别对应请求对象（Request）和响应对象（Response)
+所以 Express 中请求处理函数是这样的, 两个参数分别对应请求对象（Request）和响应对象（Response)
+
 ```javascript
 function handler(req, res) {
-  res.send('Hello Express');
+  res.send("Hello Express");
 }
 ```
 
-### Koa使用的中间件模型 - 洋葱模型
+### Koa 使用的中间件模型 - 洋葱模型
+
 ![image.png](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/892c05eecb054fdcb47d8f771619ff3c~tplv-k3u1fbpfcp-watermark.image)
-在Koa中，中间件不像 Express 中间件那样在请求通过了之后就完成了自己的使命；相反，中间件的执行清晰地分为两个阶段。
+在 Koa 中，中间件不像 Express 中间件那样在请求通过了之后就完成了自己的使命；相反，中间件的执行清晰地分为两个阶段。
 
 就像是一个洋葱，一层包裹一层
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/84ffc59d814549b48fc8f717a2036d4a~tplv-k3u1fbpfcp-watermark.image)
 
-所以Koa中，请求处理函数是这样的，只有一个参数 ctx （Context，上下文），然后只需向上下文对象写入相关的属性即可（例如这里就是写入到返回数据 body 中）
+所以 Koa 中，请求处理函数是这样的，只有一个参数 ctx （Context，上下文），然后只需向上下文对象写入相关的属性即可（例如这里就是写入到返回数据 body 中）
 
 ```js
 function handler(ctx) {
-  ctx.body = 'Hello Koa';
+  ctx.body = "Hello Koa";
 }
 ```
 
-### Koa中间件的定义
+### Koa 中间件的定义
+
 中间件其实也是一个函数
+
 ```js
 async function middleware(ctx, next) {
   // 第一阶段
@@ -116,21 +127,25 @@ async function middleware(ctx, next) {
   // 第二阶段
 }
 ```
+
 第一个参数就是 Koa Context，也就是上图中贯穿所有中间件和请求处理函数的绿色箭头所传递的内容，里面封装了请求体和响应体（实际上还有其他属性，但这里暂时不讲），分别可以通过 ctx.request 和 ctx.response 来获取，以下是一些常用的属性：
+
 ```js
-ctx.url    // 相当于 ctx.request.url
-ctx.body   // 相当于 ctx.response.body
-ctx.status // 相当于 ctx.response.status
+ctx.url; // 相当于 ctx.request.url
+ctx.body; // 相当于 ctx.response.body
+ctx.status; // 相当于 ctx.response.status
 ```
+
 > 关于所有请求和响应上面的属性及其别称，请参考 [Context API 文档](https://github.com/koajs/koa/blob/master/docs/api/context.md)
 
 中间件的第二个参数便是 next 函数，用来把控制权转交给下一个中间件。但是它跟 Express 的 next 函数本质的区别在于，Koa 的`next`函数返回的是一个 Promise，在这个 Promise 进入完成状态（Fulfilled）后，就会去执行中间件中第二阶段的代码。
 
 ### 实现一个日志中间件
+
 ```js
 // src/logger.ts
 
-import { Context } from 'koa';
+import { Context } from "koa";
 
 export function logger() {
   return async (ctx: Context, next: () => Promise<void>) => {
@@ -147,10 +162,11 @@ export function logger() {
 > 这里通过两个 Date.now() 之间的差值来计算运行时间其实是不精确的，为了获取更准确的时间，建议使用 process.hrtime() 。
 
 然后我们在 src/server.ts 中把刚才的 logger 中间件通过 app.use 注册进去，代码如下：
+
 ```js
 // ...
-import { logger } from './logger';
-  
+import { logger } from "./logger";
+
 // 初始化 Koa 应用实例
 const app = new Koa();
 
@@ -161,13 +177,15 @@ app.use(bodyParser());
 
 // ...
 ```
-然后通过crul或者浏览器访问localhost:3000
+
+然后通过 crul 或者浏览器访问 localhost:3000
 
 终端会打印
 
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/fbdba0dff89445f2a45ac1c44c217de9~tplv-k3u1fbpfcp-watermark.image)
 
-## Koa路由配置
+## Koa 路由配置
+
 由于 Koa 只是一个中间件框架，所以路由的实现需要独立的 npm 包。首先安装 @koa/router 及其 TypeScript 类型定义
 
 `$ npm install @koa/router`
@@ -177,6 +195,7 @@ app.use(bodyParser());
 > 有些教程使用 koa-router ，但由于 koa-router 目前处于几乎无人维护的状态，所以我们这里使用维护更积极的 Fork 版本 @koa/router。
 
 ### 路由规划
+
 - GET /users ：查询所有的用户
 - GET /users/:id ：查询单个用户
 - PUT /users/:id ：更新单个用户
@@ -185,9 +204,11 @@ app.use(bodyParser());
 - POST /users/register ：注册用户
 
 ### 创建控制器
-在 src 中创建 controllers 目录，用于存放控制器有关的代码。首先是 AuthController 
+
+在 src 中创建 controllers 目录，用于存放控制器有关的代码。首先是 AuthController
 
 创建 src/controllers/auth.ts ，代码如下：
+
 ```js
 
 import { Context } from 'koa';
@@ -202,7 +223,9 @@ export default class AuthController {
   }
 }
 ```
+
 然后创建 src/controllers/user.ts，代码如下：
+
 ```js
 
 import { Context } from 'koa';
@@ -227,34 +250,39 @@ export default class UserController {
 ```
 
 ### 创建路由
-然后我们创建 src/routes.ts，用于把控制器挂载到对应的路由上面
-```js
-import Router from '@koa/router';
 
-import AuthController from './controllers/auth';
-import UserController from './controllers/user';
+然后我们创建 src/routes.ts，用于把控制器挂载到对应的路由上面
+
+```js
+import Router from "@koa/router";
+
+import AuthController from "./controllers/auth";
+import UserController from "./controllers/user";
 
 const router = new Router();
 
 // auth 相关的路由
-router.post('/auth/login', AuthController.login);
-router.post('/auth/register', AuthController.register);
+router.post("/auth/login", AuthController.login);
+router.post("/auth/register", AuthController.register);
 
 // users 相关的路由
-router.get('/users', UserController.listUsers);
-router.get('/users/:id', UserController.showUserDetail);
-router.put('/users/:id', UserController.updateUser);
-router.delete('/users/:id', UserController.deleteUser);
+router.get("/users", UserController.listUsers);
+router.get("/users/:id", UserController.showUserDetail);
+router.put("/users/:id", UserController.updateUser);
+router.delete("/users/:id", UserController.deleteUser);
 
 export default router;
 ```
+
 ### 注册路由
+
 将 router 注册为中间件。打开 src/server.ts，修改代码如下
+
 ```js
 // ...
 
-import router from './routes';
-import { logger } from './logger';
+import router from "./routes";
+import { logger } from "./logger";
 
 // 初始化 Koa 应用实例
 const app = new Koa();
@@ -270,9 +298,11 @@ app.use(router.routes()).use(router.allowedMethods());
 // 运行服务器
 app.listen(3000);
 ```
+
 调用 router 对象的 routes 方法获取到对应的 Koa 中间件，还调用了 allowedMethods 方法注册了 HTTP 方法检测的中间件，这样当用户通过不正确的 HTTP 方法访问 API 时，就会自动返回 405 Method Not Allowed 状态码。
 
 我们通过 Curl 来测试路由
+
 ```BASH
 $ curl localhost:3000/hello
 Not Found
@@ -292,19 +322,22 @@ $ curl -X DELETE localhost:3000/users/123
 DeleteUser controller with ID = 123
 ```
 
-## 接入MySQL
+## 接入 MySQL
+
 Koa 本身是一个中间件框架，理论上可以接入任何类型的数据库，这里我们选择流行的关系型数据库 MySQL。并且，由于我们使用了 TypeScript 开发，因此这里使用为 TS 量身打造的 [ORM](http://www.ruanyifeng.com/blog/2019/02/orm-tutorial.html) 库 TypeORM。
 
 ### 准备数据库
+
 - 官网下载安装包，这里是[下载地址](https://dev.mysql.com/downloads/mysql/)
-- 安装好后，启动数据库，macOS是在 系统偏好设置 - MySQL - Start MySQL Server
+- 安装好后，启动数据库，macOS 是在 系统偏好设置 - MySQL - Start MySQL Server
 - 连接数据库`mysql -u root -p`
 - 输入安装数据库时设置的密码
 - 创建数据库`CREATE DATABASE koa;`
 - 创建用户并授予权限`CREATE USER 'user'@'localhost' IDENTIFIED BY 'pass';` `GRANT ALL PRIVILEGES ON koa.* TO 'user'@'localhost';`
 - 处理 MySQL 8.0 版本的认证协议问题`ALTER USER 'user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pass';` `flush privileges;`
 
-### 配置和连接TypeORM
+### 配置和连接 TypeORM
+
 安装相关的 npm 包，分别是 MySQL 驱动、TypeORM 及 reflect-metadata（反射 API 库，用于 TypeORM 推断模型的元数据）
 
 `$ npm install mysql typeorm reflect-metadata`
@@ -326,6 +359,7 @@ Koa 本身是一个中间件框架，理论上可以接入任何类型的数据�
   }
 }
 ```
+
 - database 就是我们刚刚创建的 koa 数据库
 - synchronize 设为 true 能够让我们每次修改模型定义后都能自动同步到数据库（如果你接触过其他的 ORM 库，其实就是自动数据迁移）
 - entities 字段定义了模型文件的路径，我们马上就来创建
@@ -333,14 +367,14 @@ Koa 本身是一个中间件框架，理论上可以接入任何类型的数据�
 接着修改 src/server.ts，在其中连接数据库，代码如下
 
 ```js
-import Koa from 'koa';
-import cors from '@koa/cors';
-import bodyParser from 'koa-bodyparser';
-import { createConnection } from 'typeorm';
-import 'reflect-metadata';
+import Koa from "koa";
+import cors from "@koa/cors";
+import bodyParser from "koa-bodyparser";
+import { createConnection } from "typeorm";
+import "reflect-metadata";
 
-import router from './routes';
-import { logger } from './logger';
+import router from "./routes";
+import { logger } from "./logger";
 
 // 初始化 Koa 应用实例
 createConnection()
@@ -355,14 +389,15 @@ createConnection()
     // 运行服务器
     app.listen(3000);
   })
-  .catch((err: string) => console.log('TypeORM connection error:', err));
-
+  .catch((err: string) => console.log("TypeORM connection error:", err));
 ```
 
 ### 创建数据模型定义
-创建src/entity/user.ts , 用于存放数据模型定义文件,代表用户模型
+
+创建 src/entity/user.ts , 用于存放数据模型定义文件,代表用户模型
+
 ```js
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
@@ -379,15 +414,18 @@ export class User {
   email: string;
 }
 ```
-TypeORM通过[装饰器](https://www.tslang.cn/docs/handbook/decorators.html)这种优雅的方式来将我们的 User 类映射到数据库中的表。这里我们使用了三个装饰器：
+
+TypeORM 通过[装饰器](https://www.tslang.cn/docs/handbook/decorators.html)这种优雅的方式来将我们的 User 类映射到数据库中的表。这里我们使用了三个装饰器：
 
 - Entity 用于装饰整个类，使其变成一个数据库模型
 - Column 用于装饰类的某个属性，使其对应于数据库表中的一列，可提供一系列选项参数，例如我们给 password 设置了 select: false ，使得这个字段在查询时默认不被选中
 - PrimaryGeneratedColumn 则是装饰主列，它的值将自动生成
-> 关于 TypeORM 所有的装饰器定义及其详细使用，请参考其[装饰器文档](https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/decorator-reference.md)。
+  > 关于 TypeORM 所有的装饰器定义及其详细使用，请参考其[装饰器文档](https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/decorator-reference.md)。
 
 ### 控制器中操作数据库
+
 然后就可以在 Controller 中进行数据的增删改查操作了。首先我们打开 src/controllers/user.ts ，实现所有 Controller 的逻辑
+
 ```js
 import { Context } from 'koa';
 import { getManager } from 'typeorm';
@@ -398,7 +436,7 @@ export default class UserController {
     // ctx.body = 'ListUsers controller';
     const userRepository = getManager().getRepository(User);
     const users = await userRepository.find();
-  
+
     ctx.status = 200;
     ctx.body = users;
   }
@@ -407,7 +445,7 @@ export default class UserController {
     // ctx.body = `ShowUserDetail controller with ID = ${ctx.params.id}`;
     const userRepository = getManager().getRepository(User);
     const user = await userRepository.findOne(+ctx.params.id);
-  
+
     if (user) {
       ctx.status = 200;
       ctx.body = user;
@@ -421,7 +459,7 @@ export default class UserController {
     const userRepository = getManager().getRepository(User);
     await userRepository.update(+ctx.params.id, ctx.request.body);
     const updatedUser = await userRepository.findOne(+ctx.params.id);
-  
+
     if (updatedUser) {
       ctx.status = 200;
       ctx.body = updatedUser;
@@ -434,11 +472,12 @@ export default class UserController {
     // ctx.body = `DeleteUser controller with ID = ${ctx.params.id}`;
     const userRepository = getManager().getRepository(User);
     await userRepository.delete(+ctx.params.id);
-  
+
     ctx.status = 204;
   }
 }
 ```
+
 `TypeORM` 中操作数据模型主要是通过 `Repository` 实现的，在 `Controller` 中，可以通过 `getManager().getRepository(Model)` 来获取到，之后 `Repository` 的查询 `API` 就与其他的库很类似了。
 
 > 关于 Repository 所有的查询 API，请参考[这里](https://github.com/typeorm/typeorm/blob/master/docs/zh_CN/repository-api.md)的文档。
@@ -455,7 +494,7 @@ export default class UserController {
 import { Context } from 'koa';
 import * as argon2 from 'argon2';
 import { getManager } from 'typeorm';
-  
+
 import { User } from '../entity/user';
 
 export default class AuthController {
@@ -466,28 +505,31 @@ export default class AuthController {
   public static async register(ctx: Context) {
     // ctx.body = 'Register controller';
     const userRepository = getManager().getRepository(User);
-  
+
     const newUser = new User();
     newUser.name = ctx.request.body.name;
     newUser.email = ctx.request.body.email;
     newUser.password = await argon2.hash(ctx.request.body.password);
-  
+
     // 保存到数据库
     const user = await userRepository.save(newUser);
-  
+
     ctx.status = 201;
     ctx.body = user;
   }
 }
 ```
+
 使用`postman`调用`localhost:3000/auth/register`，并且传入对应的参数
 
 在数据库中会看到记录了对应的数据
 
 ## JWT 鉴权
+
 `JSON Web Token（JWT）`是一种流行的 `RESTful API` 鉴权方案。这里我们将手把手带你学会如何在 `Koa` 框架中使用 `JWT` 鉴权，可参考[这篇文章](http://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html)进行学习。
 
 首先安装相关的 npm 包
+
 ```bash
 npm install koa-jwt jsonwebtoken
 npm install @types/jsonwebtoken -D
@@ -496,13 +538,12 @@ npm install @types/jsonwebtoken -D
 生成密钥，实际生产环境需要利用非对称加密生成
 
 ```js
-export const JWT_SECRET = 'secret';
+export const JWT_SECRET = "secret";
 ```
 
 ### 重新规划路由
 
 有些路由我们希望只有已登录的用户才有权查看（受保护的路由），而另一些路由则是所有请求都可以访问（不受保护的路由）。在 `Koa` 的洋葱模型中，我们可以这样实现
-
 
 ![image.png](https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1294b1ce42a24120ab463e2993cbbda9~tplv-k3u1fbpfcp-watermark.image)
 
@@ -511,59 +552,58 @@ export const JWT_SECRET = 'secret';
 修改`src/routes.ts`
 
 ```js
-import Router from '@koa/router';
+import Router from "@koa/router";
 
-import AuthController from './controllers/auth';
-import UserController from './controllers/user';
+import AuthController from "./controllers/auth";
+import UserController from "./controllers/user";
 
 const unprotectedRouter = new Router();
 
 // auth 相关的路由
-unprotectedRouter.post('/auth/login', AuthController.login);
-unprotectedRouter.post('/auth/register', AuthController.register);
-  
+unprotectedRouter.post("/auth/login", AuthController.login);
+unprotectedRouter.post("/auth/register", AuthController.register);
+
 const protectedRouter = new Router();
 
 // users 相关的路由
-protectedRouter.get('/users', UserController.listUsers);
-protectedRouter.get('/users/:id', UserController.showUserDetail);
-protectedRouter.put('/users/:id', UserController.updateUser);
-protectedRouter.delete('/users/:id', UserController.deleteUser);
+protectedRouter.get("/users", UserController.listUsers);
+protectedRouter.get("/users/:id", UserController.showUserDetail);
+protectedRouter.put("/users/:id", UserController.updateUser);
+protectedRouter.delete("/users/:id", UserController.deleteUser);
 
 export { protectedRouter, unprotectedRouter };
 ```
 
-### 注册JWT中间件
+### 注册 JWT 中间件
 
 修改`src/server.ts`
 
 ```js
 // ...
-import jwt from 'koa-jwt';
-import 'reflect-metadata';
+import jwt from "koa-jwt";
+import "reflect-metadata";
 
 // import router from './routes';
-import { protectedRouter, unprotectedRouter } from './routes';
-import { logger } from './logger';
-import { JWT_SECRET } from './constants';
+import { protectedRouter, unprotectedRouter } from "./routes";
+import { logger } from "./logger";
+import { JWT_SECRET } from "./constants";
 
-createConnection()
-  .then(() => {
-    // ...
-
-    // 响应用户请求
-    // app.use(router.routes()).use(router.allowedMethods());
-    // 无需 JWT Token 即可访问
-    app.use(unprotectedRouter.routes()).use(unprotectedRouter.allowedMethods());
-  
-    // 注册 JWT 中间件
-    // app.use(jwt({ secret: JWT_SECRET }).unless({ method: 'GET' }));
-    // 需要 JWT Token 才可访问
-    app.use(protectedRouter.routes()).use(protectedRouter.allowedMethods());
-
-    // ...
-  })
+createConnection().then(() => {
   // ...
+
+  // 响应用户请求
+  // app.use(router.routes()).use(router.allowedMethods());
+  // 无需 JWT Token 即可访问
+  app.use(unprotectedRouter.routes()).use(unprotectedRouter.allowedMethods());
+
+  // 注册 JWT 中间件
+  // app.use(jwt({ secret: JWT_SECRET }).unless({ method: 'GET' }));
+  // 需要 JWT Token 才可访问
+  app.use(protectedRouter.routes()).use(protectedRouter.allowedMethods());
+
+  // ...
+});
+// ...
 ```
 
 > 在 JWT 中间件注册完毕后，如果用户请求携带了有效的 `Token`，后面的 `protectedRouter` 就可以通过 `ctx.state.user` 获取到 `Token` 的内容（更精确的说法是 `Payload`，负载，一般是用户的关键信息，例如 ID）了；反之，如果 `Token` 缺失或无效，那么 `JWT` 中间件会直接自动返回 `401` 错误。关于 `koa-jwt` 的更多使用细节，请参考其[文档](https://github.com/koajs/jwt)。
@@ -583,13 +623,13 @@ export default class AuthController {
   public static async login(ctx: Context) {
     // ctx.body = 'Login controller';
     const userRepository = getManager().getRepository(User);
-  
+
     const user = await userRepository
       .createQueryBuilder()
       .where({ name: ctx.request.body.name })
       .addSelect('User.password')
       .getOne();
-  
+
     if (!user) {
       ctx.status = 401;
       ctx.body = { message: '用户名不存在' };
@@ -622,13 +662,13 @@ export default class UserController {
 
   public static async updateUser(ctx: Context) {
     const userId = +ctx.params.id;
-  
+
     if (userId !== +ctx.state.user.id) {
       ctx.status = 403;
       ctx.body = { message: '无权进行此操作' };
       return;
     }
-  
+
     const userRepository = getManager().getRepository(User);
     // await userRepository.update(+ctx.params.id, ctx.request.body);
     // const updatedUser = await userRepository.findOne(+ctx.params.id);
@@ -640,13 +680,13 @@ export default class UserController {
 
   public static async deleteUser(ctx: Context) {
     const userId = +ctx.params.id;
-  
+
     if (userId !== +ctx.state.user.id) {
       ctx.status = 403;
       ctx.body = { message: '无权进行此操作' };
       return;
     }
-  
+
     const userRepository = getManager().getRepository(User);
     // await userRepository.delete(+ctx.params.id);
     await userRepository.delete(userId);
@@ -675,7 +715,7 @@ export class NotFoundException extends BaseException {
 
   constructor(msg?: string) {
     super();
-    this.message = msg || '无此内容';
+    this.message = msg || "无此内容";
   }
 }
 
@@ -684,7 +724,7 @@ export class UnauthorizedException extends BaseException {
 
   constructor(msg?: string) {
     super();
-    this.message = msg || '尚未登录';
+    this.message = msg || "尚未登录";
   }
 }
 
@@ -693,7 +733,7 @@ export class ForbiddenException extends BaseException {
 
   constructor(msg?: string) {
     super();
-    this.message = msg || '权限不足';
+    this.message = msg || "权限不足";
   }
 }
 ```
@@ -791,26 +831,25 @@ export default class UserController {
 ```js
 // ...
 
-createConnection()
-  .then(() => {
-    // ...
-
-    // 注册中间件
-    app.use(logger());
-    app.use(cors());
-    app.use(bodyParser());
-
-    app.use(async (ctx, next) => {
-      try {
-        await next();
-      } catch (err) {
-        // 只返回 JSON 格式的响应
-        ctx.status = err.status || 500;
-        ctx.body = { message: err.message };
-      }
-    });
-  
-    // ...
-  })
+createConnection().then(() => {
   // ...
+
+  // 注册中间件
+  app.use(logger());
+  app.use(cors());
+  app.use(bodyParser());
+
+  app.use(async (ctx, next) => {
+    try {
+      await next();
+    } catch (err) {
+      // 只返回 JSON 格式的响应
+      ctx.status = err.status || 500;
+      ctx.body = { message: err.message };
+    }
+  });
+
+  // ...
+});
+// ...
 ```
